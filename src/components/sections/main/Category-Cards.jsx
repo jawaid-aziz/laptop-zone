@@ -25,7 +25,7 @@ export default function CategoryCards() {
             key={i}
             className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
           >
-            <div className="relative w-full h-52">
+            <div className="relative w-full h-50">
               <Image
                 src={category.image}
                 alt={category.title}

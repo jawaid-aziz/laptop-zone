@@ -15,7 +15,7 @@ const promoBanners = [
     subtitle: "Fast, reliable, and affordable laptop repairs.",
     image: "/banners/repair.webp",
     buttonText: "Book Service",
-    align: "right",
+    align: "left",
   },
 ];
 
@@ -33,9 +33,9 @@ export default function Portfolio() {
               src={banner.image}
               alt={banner.title}
               fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              className=" group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors"></div>
+            <div className="absolute inset-0  group-hover:bg-black/30 transition-colors"></div>
 
             {/* Content Overlay */}
             <div
@@ -43,8 +43,8 @@ export default function Portfolio() {
                 banner.align === "right" ? "items-end text-right" : "items-start text-left"
               }`}
             >
-              <h3 className="text-2xl font-bold mb-2">{banner.title}</h3>
-              <p className="mb-4 text-sm text-gray-200 max-w-xs">{banner.subtitle}</p>
+              <h3 className="text-2xl font-bold mb-2 text-black">{banner.title}</h3>
+              <p className="mb-4 text-sm text-gray-800 max-w-xs">{banner.subtitle}</p>
               <Button
                 variant="secondary"
                 className="bg-white text-black hover:bg-gray-200"
