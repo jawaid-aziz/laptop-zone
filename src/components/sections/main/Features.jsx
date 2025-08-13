@@ -31,15 +31,13 @@ export default function Features() {
         {features.map((feature, i) => (
           <Card
             key={i}
-            className="flex flex-col items-center text-center hover:shadow-md transition-shadow"
+            className="flex flex-col items-center justify-center text-center p-6 hover:shadow-md transition-shadow"
           >
-            <CardHeader>
-              <div className="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-2">
-                <feature.icon size={24} />
-              </div>
-              <CardTitle className="text-lg">{feature.title}</CardTitle>
-              <CardDescription>{feature.description}</CardDescription>
-            </CardHeader>
+            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+              <feature.icon size={24} />
+            </div>
+            <CardTitle className="text-lg">{feature.title}</CardTitle>
+            <CardDescription>{feature.description}</CardDescription>
           </Card>
         ))}
       </div>

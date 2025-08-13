@@ -4,15 +4,15 @@ import Image from "next/image";
 const categories = [
   {
     title: "Branded Laptops",
-    image: "/categories/laptops.jpg",
+    image: "/categories/laptops.webp",
   },
   {
     title: "Accessories",
-    image: "/categories/accessories.jpg",
+    image: "/categories/accessories.webp",
   },
   {
     title: "Laptops on Rent",
-    image: "/categories/rent.jpg",
+    image: "/categories/rent.webp",
   },
 ];
 

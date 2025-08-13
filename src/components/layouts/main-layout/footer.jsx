@@ -62,7 +62,7 @@ export function Footer() {
         {/* Contact */}
         <div>
           <h3 className="font-semibold mb-5 text-sm tracking-wide uppercase text-white">Contact</h3>
-          <p className="text-sm">+92 322 2155628</p>
+          <p className="text-sm">+92 300 3219047</p>
           <p className="text-sm">support@laptopzone.pk</p>
         </div>
       </div>

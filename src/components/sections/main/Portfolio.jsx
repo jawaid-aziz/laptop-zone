@@ -1,58 +1,59 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import Image from "next/image";
 
-const portfolioItems = [
+const promoBanners = [
   {
-    title: "Laptop Repair",
-    image: "/portfolio/repair.jpg",
+    title: "The Power You Need as a Student",
+    subtitle: "Get the best deals on laptops designed for learning.",
+    image: "/banners/student.webp",
+    buttonText: "Shop Now",
+    align: "left", // controls text alignment
   },
   {
-    title: "Corporate Supply",
-    image: "/portfolio/corporate.jpg",
-  },
-  {
-    title: "IT Infrastructure",
-    image: "/portfolio/infrastructure.jpg",
-  },
-  {
-    title: "Networking Solutions",
-    image: "/portfolio/networking.jpg",
-  },
-  {
-    title: "On-Site Support",
-    image: "/portfolio/support.jpg",
-  },
-  {
-    title: "Custom Builds",
-    image: "/portfolio/custom.jpg",
+    title: "Laptop Repair & Maintenance",
+    subtitle: "Fast, reliable, and affordable laptop repairs.",
+    image: "/banners/repair.webp",
+    buttonText: "Book Service",
+    align: "right",
   },
 ];
 
 export default function Portfolio() {
   return (
-    <section className="bg-white border-t border-b">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <h2 className="text-2xl font-bold mb-8 text-center">Our Portfolio</h2>
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-          {portfolioItems.map((item, i) => (
-            <Card
-              key={i}
-              className="overflow-hidden group hover:shadow-lg transition-shadow cursor-pointer"
+    <section className="bg-white py-12">
+      <div className="max-w-7xl mx-auto px-6 grid gap-6 sm:grid-cols-2">
+        {promoBanners.map((banner, i) => (
+          <Card
+            key={i}
+            className="relative overflow-hidden group cursor-pointer rounded-xl border-0 h-64"
+          >
+            {/* Background Image */}
+            <Image
+              src={banner.image}
+              alt={banner.title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors"></div>
+
+            {/* Content Overlay */}
+            <div
+              className={`relative z-10 flex flex-col justify-center h-full px-8 text-white ${
+                banner.align === "right" ? "items-end text-right" : "items-start text-left"
+              }`}
             >
-              <div className="relative w-full h-48">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <CardHeader className="text-center">
-                <CardTitle>{item.title}</CardTitle>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
+              <h3 className="text-2xl font-bold mb-2">{banner.title}</h3>
+              <p className="mb-4 text-sm text-gray-200 max-w-xs">{banner.subtitle}</p>
+              <Button
+                variant="secondary"
+                className="bg-white text-black hover:bg-gray-200"
+              >
+                {banner.buttonText}
+              </Button>
+            </div>
+          </Card>
+        ))}
       </div>
     </section>
   );
