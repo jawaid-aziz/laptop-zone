@@ -33,14 +33,28 @@ const router = useRouter();
   const menuItems = [
     {
       title: "Home",
-      url: "/",
+      url: "/admin",
       icon: Home,
     },
     {
       title: "Products",
       icon: ClipboardList,
       children: [
-        { title: "Add", url: `/product/add` },
+        { title: "Add", url: `/admin/add-product` },
+      ],
+    },
+        {
+      title: "Categories",
+      icon: ClipboardList,
+      children: [
+        { title: "Add", url: `/admin/add-category` },
+      ],
+    },
+        {
+      title: "Orders",
+      icon: ClipboardList,
+      children: [
+        { title: "Add", url: `/admin/show-orders` },
       ],
     },
   ];
