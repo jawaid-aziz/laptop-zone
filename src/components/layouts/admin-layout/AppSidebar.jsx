@@ -6,6 +6,7 @@ import {
   Home,
   Settings,
   Users,
+  ChartBarStacked,
   ClipboardList,
   LogOut,
   ChevronDown,
@@ -41,18 +42,20 @@ const router = useRouter();
       icon: ClipboardList,
       children: [
         { title: "Add", url: `/admin/add-product` },
+        { title: "View", url: `/admin/view-products` },
       ],
     },
         {
       title: "Categories",
-      icon: ClipboardList,
+      icon: ChartBarStacked,
       children: [
         { title: "Add", url: `/admin/add-category` },
+        { title: "View", url: `/admin/view-category` },
       ],
     },
         {
       title: "Orders",
-      icon: ClipboardList,
+      icon: FolderDot,
       children: [
         { title: "Add", url: `/admin/show-orders` },
       ],
