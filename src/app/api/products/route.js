@@ -19,20 +19,53 @@ export async function POST(req) {
     await dbConnect();
 
     const formData = await req.formData();
-
-    // fields
+    console.log("Form Data received:", formData);
+    // Basic fields
     const name = formData.get("name");
     const brand = formData.get("brand");
     const stock = formData.get("stock");
-    const description = formData.get("description");
+    const overview = formData.get("overview");
     const category = formData.get("category");
     const oldPrice = formData.get("oldPrice");
     const newPrice = formData.get("newPrice");
 
-    // images
-    const files = formData.getAll("images"); // supports multiple files
-    const uploadDir = path.join(process.cwd(), "public/uploads");
+    // Tags
+    let tags = [];
+    const tagsRaw = formData.get("tags");
+    if (tagsRaw) {
+      try {
+        tags = JSON.parse(tagsRaw);
+      } catch {
+        console.warn("Invalid tags format");
+      }
+    }
 
+
+    // Specifications (JSON string)
+    const specificationsRaw = formData.get("specifications");
+    let specifications = [];
+    if (specificationsRaw) {
+      try {
+        specifications = JSON.parse(specificationsRaw);
+      } catch {
+        console.warn("Invalid specifications format");
+      }
+    }
+
+    // Key Features (JSON string)
+    const keyFeaturesRaw = formData.get("keyFeatures");
+    let keyFeatures = {};
+    if (keyFeaturesRaw) {
+      try {
+        keyFeatures = JSON.parse(keyFeaturesRaw);
+      } catch {
+        console.warn("Invalid keyFeatures format");
+      }
+    }
+
+    // File handling
+    const files = formData.getAll("images");
+    const uploadDir = path.join(process.cwd(), "public/uploads");
     await fs.mkdir(uploadDir, { recursive: true });
 
     const imageUrls = [];
@@ -51,11 +84,14 @@ export async function POST(req) {
       name,
       brand,
       stock,
-      description,
+      overview,
       category,
       oldPrice,
       newPrice,
       images: imageUrls,
+      tags,
+      specifications,
+      keyFeatures,
     });
 
     await newProduct.save();

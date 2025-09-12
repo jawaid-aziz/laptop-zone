@@ -6,7 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -14,21 +20,44 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
 export default function AddProductPage() {
-  
-    const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [open, setOpen] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [images, setImages] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [specs, setSpecs] = useState([{ key: "", value: "" }]);
   const [form, setForm] = useState({
     name: "",
     brand: "",
     stock: "",
-    description: "",
+    overview: "",
     category: "",
     oldPrice: "",
     newPrice: "",
+    keyFeatures: {
+      processor: "",
+      memory: "",
+      storage: "",
+      display: "",
+      graphics: "",
+      buildAndDesign: "",
+      connectivity: "",
+      securityFeatures: "",
+      battery: "",
+      operatingSystem: "",
+      keyboardAndUsability: "",
+      additionalFeatures: "",
+      warrantyAndSupport: "",
+    },
   });
 
   // Fetch categories
@@ -41,7 +70,7 @@ export default function AddProductPage() {
     fetchCategories();
   }, []);
 
-    const handleCategoryChange = (value) => {
+  const handleCategoryChange = (value) => {
     if (value === "__new__") {
       setOpen(true);
     } else {
@@ -49,7 +78,7 @@ export default function AddProductPage() {
     }
   };
 
-    const handleAddCategory = async () => {
+  const handleAddCategory = async () => {
     if (!newCategory.trim()) return;
     const res = await fetch("/api/categories", {
       method: "POST",
@@ -66,38 +95,114 @@ export default function AddProductPage() {
     }
   };
 
-  // Handle input
+  // Input handlers
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  // Handle file upload
+  const handleKeyFeatureChange = (key, value) => {
+    setForm((prev) => ({
+      ...prev,
+      keyFeatures: {
+        ...prev.keyFeatures,
+        [key]: value,
+      },
+    }));
+  };
+
+  // Tags
+  function handleTagAdd(e) {
+    if (e.key === "Enter" && e.target.value.trim()) {
+      setTags([...tags, e.target.value.trim()]);
+      e.target.value = "";
+    }
+  }
+  function removeTag(index) {
+    setTags(tags.filter((_, i) => i !== index));
+  }
+
+  // Specifications
+  function handleSpecChange(index, field, value) {
+    const updated = [...specs];
+    updated[index][field] = value;
+    setSpecs(updated);
+  }
+  function addSpec() {
+    setSpecs([...specs, { key: "", value: "" }]);
+  }
+  function removeSpec(index) {
+    setSpecs(specs.filter((_, i) => i !== index));
+  }
+
+  // File upload
   function handleFileChange(e) {
     if (e.target.files) {
       setImages([...images, ...Array.from(e.target.files)]);
     }
   }
-
-  // Remove image
-  function removeImage() {
+  function removeImage(index) {
     setImages(images.filter((_, i) => i !== index));
   }
 
 async function handleSubmit(e) {
-  e.preventDefault(); // <-- now works
+  e.preventDefault();
   try {
     const formData = new FormData();
-    Object.entries(form).forEach(([key, value]) => formData.append(key, value));
-    images.forEach((img) => formData.append("images", img)); // matches backend
 
-    const res = await fetch("/api/products", { method: "POST", body: formData });
+    // Basic fields
+    Object.entries(form).forEach(([key, value]) => {
+      if (key !== "keyFeatures") {
+        formData.append(key, value);
+      }
+    });
 
-    if (!res.ok) throw new Error("Failed");
-    const data = await res.json();
+    // ✅ serialize tags into JSON
+    formData.append("tags", JSON.stringify(tags));
 
-    alert("Product added successfully");
-    setForm({ name: "", brand: "", stock: "", description: "", category: "", oldPrice: "", newPrice: "" });
+    // ✅ serialize specs into JSON
+    formData.append("specifications", JSON.stringify(specs));
+
+    // ✅ serialize keyFeatures into JSON
+    formData.append("keyFeatures", JSON.stringify(form.keyFeatures));
+
+    // Images
+    images.forEach((img) => formData.append("images", img));
+
+    const res = await fetch("/api/products", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) throw new Error("Failed to save");
+
+    alert("✅ Product added successfully!");
+    setForm({
+      name: "",
+      brand: "",
+      stock: "",
+      overview: "",
+      category: "",
+      oldPrice: "",
+      newPrice: "",
+      keyFeatures: {
+        processor: "",
+        memory: "",
+        storage: "",
+        display: "",
+        graphics: "",
+        buildAndDesign: "",
+        connectivity: "",
+        securityFeatures: "",
+        battery: "",
+        operatingSystem: "",
+        keyboardAndUsability: "",
+        additionalFeatures: "",
+        warrantyAndSupport: "",
+      },
+    });
+    setTags([]);
+    setSpecs([{ key: "", value: "" }]);
     setImages([]);
   } catch (err) {
     alert(err.message);
@@ -106,99 +211,227 @@ async function handleSubmit(e) {
 
 
   return (
-    <div className="min-h-screen bg-white p-8 flex items-center justify-center">
-      <Card className="w-full max-w-6xl border-navy-700 shadow-lg rounded-2xl">
-        <CardHeader className="bg-navy-700 text-white rounded-t-2xl">
-          <CardTitle className="text-xl">Add Product</CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* LEFT COLUMN */}
-            <div className="space-y-4">
+    <div className="min-h-screen bg-gray-50 p-8 flex">
+      {/* LEFT: Form */}
+      <form onSubmit={handleSubmit} className="flex-1 space-y-6 pr-8 max-w-3xl">
+        <Card className="border-navy-700 shadow">
+          <CardHeader className="bg-navy-700 text-white rounded-t-lg">
+            <CardTitle>Add Product</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-6">
+            <div>
+              <Label>Product Name*</Label>
+              <Input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div>
+              <Label>Overview</Label>
+              <Textarea
+                name="overview"
+                value={form.overview}
+                onChange={handleChange}
+                className="w-full border rounded-md p-2 h-40"
+                placeholder="Write a detailed product overview..."
+              />
+            </div>
+
+            <div>
+              <Label>Category*</Label>
+              <Select
+                value={form.category}
+                onValueChange={handleCategoryChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat._id} value={cat._id}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="__new__">+ Add New Category</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>Brand</Label>
+              <Input name="brand" value={form.brand} onChange={handleChange} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Product Name*</Label>
-                <Input name="name" value={form.name} onChange={handleChange} required />
+                <Label>Stock</Label>
+                <Input
+                  type="number"
+                  name="stock"
+                  value={form.stock}
+                  onChange={handleChange}
+                />
               </div>
-
               <div>
-                <Label>Description*</Label>
-                <Textarea name="description" value={form.description} onChange={handleChange} required />
+                <Label>New Price*</Label>
+                <Input
+                  type="number"
+                  name="newPrice"
+                  value={form.newPrice}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-
-        {/* Category Selector */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Category*</label>
-          <Select value={form.category} onValueChange={handleCategoryChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((cat) => (
-                <SelectItem key={cat._id} value={cat._id}>
-                  {cat.name}
-                </SelectItem>
-              ))}
-              <SelectItem value="__new__">+ Add New Category</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
               <div>
-                <Label>Brand Name</Label>
-                <Input name="brand" value={form.brand} onChange={handleChange} />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Stock Quantity</Label>
-                  <Input type="number" name="stock" value={form.stock} onChange={handleChange} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Old Price</Label>
-                  <Input type="number" name="oldPrice" value={form.oldPrice} onChange={handleChange} />
-                </div>
-                <div>
-                  <Label>New Price*</Label>
-                  <Input type="number" name="newPrice" value={form.newPrice} onChange={handleChange} required />
-                </div>
+                <Label>Old Price</Label>
+                <Input
+                  type="number"
+                  name="oldPrice"
+                  value={form.oldPrice}
+                  onChange={handleChange}
+                />
               </div>
             </div>
 
-            {/* RIGHT COLUMN */}
-            <div className="space-y-4">
-              <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500">
-                Product Preview
-              </div>
+            <Separator />
 
-              <div>
-                <Label>Product Gallery</Label>
-                <div className="border-2 border-dashed border-navy-700 rounded-lg p-6 text-center text-sm text-gray-500">
-                  <Input type="file" accept="image/*" multiple onChange={handleFileChange} className="hidden" id="fileUpload" />
-                  <label htmlFor="fileUpload" className="cursor-pointer">Click or drag images here</label>
-                </div>
-              </div>
-
-              <div className="space-y-2 max-h-40 overflow-y-auto">
-                {images.map((img, i) => (
-                  <div key={i} className="flex items-center justify-between p-2 border rounded-lg">
-                    <span className="text-sm">{img.name}</span>
-                    <Button variant="destructive" size="sm" onClick={() => removeImage(i)}>Remove</Button>
-                  </div>
+            {/* Tags */}
+            <div>
+              <Label>Tags</Label>
+              <Input
+                placeholder="Type and press Enter"
+                onKeyDown={handleTagAdd}
+              />
+              <div className="flex gap-2 mt-2 flex-wrap">
+                {tags.map((tag, i) => (
+                  <span
+                    key={i}
+                    className="bg-black text-white px-3 py-1 rounded-lg flex items-center gap-2"
+                  >
+                    {tag}
+                    <button type="button" onClick={() => removeTag(i)}>
+                      ✕
+                    </button>
+                  </span>
                 ))}
               </div>
             </div>
 
-            {/* ACTIONS */}
-            <div className="col-span-2 flex justify-end gap-3 pt-4">
-              <Button type="submit" className="bg-black text-white hover:bg-red-500">Save</Button>
+            {/* Specifications */}
+            <Accordion type="single" collapsible>
+              <AccordionItem value="specs">
+                <AccordionTrigger>Specifications</AccordionTrigger>
+                <AccordionContent>
+                  {specs.map((s, i) => (
+                    <div key={i} className="flex gap-2 mb-2">
+                      <Input
+                        placeholder="Key"
+                        value={s.key}
+                        onChange={(e) =>
+                          handleSpecChange(i, "key", e.target.value)
+                        }
+                      />
+                      <Input
+                        placeholder="Value"
+                        value={s.value}
+                        onChange={(e) =>
+                          handleSpecChange(i, "value", e.target.value)
+                        }
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={() => removeSpec(i)}
+                      >
+                        ✕
+                      </Button>
+                    </div>
+                  ))}
+                  <Button type="button" onClick={addSpec}>
+                    + Add Specification
+                  </Button>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+            {/* Key Features */}
+            <div>
+              <h3 className="text-lg font-semibold">Key Features</h3>
+              <div className="space-y-4 mt-2">
+                {Object.keys(form.keyFeatures).map((key) => (
+                  <div key={key}>
+                    <label className="block text-sm font-medium capitalize">
+                      {key.replace(/([A-Z])/g, " $1")}
+                    </label>
+                    <textarea
+                      value={form.keyFeatures[key]}
+                      onChange={(e) =>
+                        handleKeyFeatureChange(key, e.target.value)
+                      }
+                      className="w-full border rounded-md p-2 h-25"
+                      placeholder={`Enter ${key} details...`}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          </form>
-        </CardContent>
-      </Card>
-      
+          </CardContent>
+        </Card>
+      </form>
+
+      {/* RIGHT: Images + Save */}
+      <div className="w-80 space-y-6">
+        <Card className="sticky top-8 border-navy-700 shadow">
+          <CardHeader className="bg-navy-700 text-white rounded-t-lg">
+            <CardTitle>Images</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-6">
+            <div className="border-2 border-dashed border-navy-700 rounded-lg p-6 text-center text-sm text-gray-500">
+              <Input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileChange}
+                className="hidden"
+                id="fileUpload"
+              />
+              <label htmlFor="fileUpload" className="cursor-pointer">
+                Click or drag images here
+              </label>
+            </div>
+
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {images.map((img, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-2 border rounded-lg"
+                >
+                  <span className="text-sm truncate">{img.name}</span>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => removeImage(i)}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-black text-white hover:bg-navy-800"
+              onClick={handleSubmit}
+            >
+              Save Product
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Add Category Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
