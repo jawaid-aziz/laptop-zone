@@ -7,15 +7,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export default function AddProductPage() {
   
-  const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
   const [images, setImages] = useState([]);
   const [form, setForm] = useState({
     name: "",
     brand: "",
-    price: "",
     stock: "",
     description: "",
     category: "",
@@ -33,19 +41,39 @@ export default function AddProductPage() {
     fetchCategories();
   }, []);
 
+    const handleCategoryChange = (value) => {
+    if (value === "__new__") {
+      setOpen(true);
+    } else {
+      setForm({ ...form, category: value });
+    }
+  };
+
+    const handleAddCategory = async () => {
+    if (!newCategory.trim()) return;
+    const res = await fetch("/api/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newCategory }),
+    });
+
+    if (res.ok) {
+      const created = await res.json();
+      setCategories((prev) => [...prev, created]);
+      setForm({ ...form, category: created._id });
+      setNewCategory("");
+      setOpen(false);
+    }
+  };
+
   // Handle input
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  // Handle category select
-  function handleCategoryChange() {
-    setForm((prev) => ({ ...prev, category: value }));
-  }
-
   // Handle file upload
-  function handleFileChange() {
+  function handleFileChange(e) {
     if (e.target.files) {
       setImages([...images, ...Array.from(e.target.files)]);
     }
@@ -56,30 +84,26 @@ export default function AddProductPage() {
     setImages(images.filter((_, i) => i !== index));
   }
 
-  // Submit
-  async function handleSubmit() {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      Object.entries(form).forEach(([key, value]) => formData.append(key, value));
-      images.forEach((img) => formData.append("images", img));
+async function handleSubmit(e) {
+  e.preventDefault(); // <-- now works
+  try {
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => formData.append(key, value));
+    images.forEach((img) => formData.append("images", img)); // matches backend
 
-      const res = await fetch("/api/products", {
-        method: "POST",
-        body: formData,
-      });
+    const res = await fetch("/api/products", { method: "POST", body: formData });
 
-      if (!res.ok) throw new Error("Failed");
-      const data = await res.json();
+    if (!res.ok) throw new Error("Failed");
+    const data = await res.json();
 
-      alert("Product added successfully");
-
-      setForm({ name: "", brand: "", price: "", stock: "", description: "", category: "", oldPrice: "", newPrice: "" });
-      setImages([]);
-    } catch (err) {
-      alert(err.message);
-    }
+    alert("Product added successfully");
+    setForm({ name: "", brand: "", stock: "", description: "", category: "", oldPrice: "", newPrice: "" });
+    setImages([]);
+  } catch (err) {
+    alert(err.message);
   }
+}
+
 
   return (
     <div className="min-h-screen bg-white p-8 flex items-center justify-center">
@@ -92,30 +116,32 @@ export default function AddProductPage() {
             {/* LEFT COLUMN */}
             <div className="space-y-4">
               <div>
-                <Label>Product Name</Label>
+                <Label>Product Name*</Label>
                 <Input name="name" value={form.name} onChange={handleChange} required />
               </div>
 
               <div>
-                <Label>Description</Label>
-                <Textarea name="description" value={form.description} onChange={handleChange} />
+                <Label>Description*</Label>
+                <Textarea name="description" value={form.description} onChange={handleChange} required />
               </div>
 
-              <div>
-                <Label>Category</Label>
-                <Select value={form.category} onValueChange={handleCategoryChange}>
-                  <SelectTrigger className="border-navy-700">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat._id} value={cat._id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+        {/* Category Selector */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Category*</label>
+          <Select value={form.category} onValueChange={handleCategoryChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((cat) => (
+                <SelectItem key={cat._id} value={cat._id}>
+                  {cat.name}
+                </SelectItem>
+              ))}
+              <SelectItem value="__new__">+ Add New Category</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
               <div>
                 <Label>Brand Name</Label>
@@ -127,10 +153,6 @@ export default function AddProductPage() {
                   <Label>Stock Quantity</Label>
                   <Input type="number" name="stock" value={form.stock} onChange={handleChange} />
                 </div>
-                <div>
-                  <Label>Price</Label>
-                  <Input type="number" name="price" value={form.price} onChange={handleChange} required />
-                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -139,8 +161,8 @@ export default function AddProductPage() {
                   <Input type="number" name="oldPrice" value={form.oldPrice} onChange={handleChange} />
                 </div>
                 <div>
-                  <Label>New Price</Label>
-                  <Input type="number" name="newPrice" value={form.newPrice} onChange={handleChange} />
+                  <Label>New Price*</Label>
+                  <Input type="number" name="newPrice" value={form.newPrice} onChange={handleChange} required />
                 </div>
               </div>
             </div>
@@ -171,13 +193,31 @@ export default function AddProductPage() {
 
             {/* ACTIONS */}
             <div className="col-span-2 flex justify-end gap-3 pt-4">
-              <Button type="submit" className="bg-navy-700 text-white hover:bg-navy-800">Save</Button>
-              <Button type="button" variant="destructive">Delete</Button>
-              <Button type="button" variant="outline">Cancel</Button>
+              <Button type="submit" className="bg-black text-white hover:bg-red-500">Save</Button>
             </div>
           </form>
         </CardContent>
       </Card>
+      
+      {/* Add Category Dialog */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Category</DialogTitle>
+          </DialogHeader>
+          <Input
+            placeholder="Enter category name"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+          />
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddCategory}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

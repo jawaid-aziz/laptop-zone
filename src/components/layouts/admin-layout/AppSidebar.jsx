@@ -57,7 +57,7 @@ const router = useRouter();
       title: "Orders",
       icon: FolderDot,
       children: [
-        { title: "Add", url: `/admin/show-orders` },
+        { title: "Show", url: `/admin/show-orders` },
       ],
     },
   ];

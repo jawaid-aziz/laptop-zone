@@ -1,44 +1,9 @@
 import { NextResponse } from "next/server";
+import path from "path";
+import { promises as fs } from "fs";
 import dbConnect from "@/lib/dbConnect";
 import Product from "@/models/Product";
-import formidable from "formidable";
-import path from "path";
-import fs from "fs";
 
-// Disable Next.js body parsing (important for formidable to work)
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-// Helper to parse form-data with formidable
-async function parseForm(req) {
-  return new Promise((resolve, reject) => {
-    const uploadDir = path.join(process.cwd(), "/public/uploads");
-
-    // Make sure uploads folder exists
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    const form = formidable({
-      uploadDir,
-      keepExtensions: true, // keeps .jpg/.png extensions
-      filename: (name, ext, part) => {
-        // Custom filename (timestamp + original name)
-        return `${Date.now()}_${part.originalFilename}`;
-      },
-    });
-
-    form.parse(req, (err, fields, files) => {
-      if (err) reject(err);
-      resolve({ fields, files });
-    });
-  });
-}
-
-// GET all products
 export async function GET() {
   try {
     await dbConnect();
@@ -49,31 +14,58 @@ export async function GET() {
   }
 }
 
-// ADD new product with image
 export async function POST(req) {
   try {
     await dbConnect();
 
-    // Parse form data
-    const { fields, files } = await parseForm(req);
+    const formData = await req.formData();
 
-    // Get image path
-    const imageFile = files.image[0]; // assuming client sends field name "image"
-    const imageUrl = `/uploads/${path.basename(imageFile.filepath)}`;
+    // fields
+    const name = formData.get("name");
+    const brand = formData.get("brand");
+    const stock = formData.get("stock");
+    const description = formData.get("description");
+    const category = formData.get("category");
+    const oldPrice = formData.get("oldPrice");
+    const newPrice = formData.get("newPrice");
 
-    // Create product in DB
+    // images
+    const files = formData.getAll("images"); // supports multiple files
+    const uploadDir = path.join(process.cwd(), "public/uploads");
+
+    await fs.mkdir(uploadDir, { recursive: true });
+
+    const imageUrls = [];
+
+    for (const file of files) {
+      if (file && file.name) {
+        const filePath = path.join(uploadDir, file.name);
+        const arrayBuffer = await file.arrayBuffer();
+        await fs.writeFile(filePath, Buffer.from(arrayBuffer));
+        imageUrls.push(`/uploads/${file.name}`);
+      }
+    }
+
+    // Save product
     const newProduct = new Product({
-      name: fields.name[0],
-      price: fields.price[0],
-      category: fields.category[0],
-      image: imageUrl, // store URL instead of binary
+      name,
+      brand,
+      stock,
+      description,
+      category,
+      oldPrice,
+      newPrice,
+      images: imageUrls,
     });
 
     await newProduct.save();
 
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to create product" }, { status: 500 });
+    console.error("Error uploading product:", error);
+    return NextResponse.json(
+      { error: "Failed to create product" },
+      { status: 500 }
+    );
   }
 }
