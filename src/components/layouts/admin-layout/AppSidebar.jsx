@@ -46,14 +46,6 @@ const router = useRouter();
       ],
     },
         {
-      title: "Categories",
-      icon: ChartBarStacked,
-      children: [
-        { title: "Add", url: `/admin/add-category` },
-        { title: "View", url: `/admin/view-category` },
-      ],
-    },
-        {
       title: "Orders",
       icon: FolderDot,
       children: [
