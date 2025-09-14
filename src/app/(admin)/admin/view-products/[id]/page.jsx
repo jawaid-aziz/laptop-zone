@@ -6,8 +6,10 @@ import Image from "next/image";
 
 // ✅ Fetch product via API
 async function getProduct(id) {
-  const res = await fetch(`/api/products/${id}`, {
-    cache: "no-store", // always get fresh data
+    const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"; // fallback for dev
+  const res = await fetch(`${baseUrl}/api/products/${id}`, {
+    cache: "no-store",
   });
 
   if (!res.ok) {
@@ -18,7 +20,7 @@ async function getProduct(id) {
 }
 
 export default async function ProductPage({ params }) {
-  const { id } = params;
+  const { id } = await params;
 
   const product = await getProduct(id);
 

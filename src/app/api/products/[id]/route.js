@@ -35,7 +35,9 @@ async function parseForm(req) {
 export async function GET(req, { params }) {
   try {
     await dbConnect();
-    const product = await Product.findById(params.id).populate("category");
+    
+    const { id } = await params; // 👈 must await
+    const product = await Product.findById(id).populate("category");
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }

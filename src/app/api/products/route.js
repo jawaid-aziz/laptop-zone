@@ -3,6 +3,7 @@ import path from "path";
 import { promises as fs } from "fs";
 import dbConnect from "@/lib/dbConnect";
 import Product from "@/models/Product";
+import Category from "@/models/Category";
 
 export async function GET() {
   try {
