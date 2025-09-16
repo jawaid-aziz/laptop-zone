@@ -5,8 +5,10 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, User, Search } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 export default function Header() {
+  const { cart } = useCart();
   return (
     <header className="w-full border-b">
       {/* Top Bar */}
@@ -49,7 +51,10 @@ export default function Header() {
               placeholder="Search products..."
               className="pl-10 w-[220px]"
             />
-            <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
+            <Search
+              className="absolute left-3 top-2.5 text-gray-500"
+              size={18}
+            />
           </div>
 
           {/* User Icon */}
@@ -61,9 +66,11 @@ export default function Header() {
           <Button variant="ghost" size="icon" className="relative">
             <ShoppingCart className="w-5 h-5" />
             {/* Cart badge */}
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1 rounded-full">
-              0
-            </span>
+            {cart.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1 rounded-full">
+                {cart.reduce((acc, item) => acc + item.quantity, 0)}
+              </span>
+            )}
           </Button>
         </div>
       </div>

@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   Card,
-  CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
@@ -24,37 +24,24 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
-
-const products = [
-  {
-    title: "Apple MacBook Air 2015 Ci5 4th Gen",
-    price: "Rs45,000",
-    image: "/products/mac1.webp",
-    soldOut: true,
-  },
-  {
-    title: "Dell Latitude 3400 Ci3 8th Gen",
-    price: "Rs42,000",
-    oldPrice: "Rs46,000",
-    image: "/products/dell1.webp",
-    soldOut: false,
-  },
-  {
-    title: "Dell Latitude 5410 Ci5 10th Gen",
-    price: "Rs55,000",
-    image: "/products/dell2.webp",
-    soldOut: false,
-  },
-  {
-    title: "Dell Latitude 5470 Ci5 6th Gen",
-    price: "Rs36,000",
-    image: "/products/dell3.webp",
-    soldOut: false,
-  },
-  // add more...
-];
+import { useEffect, useState } from "react";
 
 export default function Shop() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await fetch("/api/products");
+        const data = await res.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to load products:", error);
+      }
+    }
+    fetchProducts();
+  }, []);
+
   return (
     <div className="bg-white">
       {/* Breadcrumbs */}
@@ -105,7 +92,7 @@ export default function Shop() {
         <div className="md:col-span-3">
           <div className="flex justify-between items-center mb-6">
             <p className="text-sm text-gray-600">
-              Showing 16 of 79 products
+              Showing {products.length} products
             </p>
             <Select>
               <SelectTrigger className="w-[180px]">
@@ -120,42 +107,42 @@ export default function Shop() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product, i) => (
-<Card key={i} className="relative group">
-  {/* Image wrapper */}
-  <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center rounded-t-lg overflow-hidden">
-    {/* Sold Out Badge */}
-    {product.soldOut && (
-      <Badge className="absolute top-2 left-2 bg-gray-800 text-white">
-        SOLD OUT
-      </Badge>
-    )}
+            {products.map((product) => (
+              <Link key={product._id} href={`/shop/${product._id}`}>
+                <Card className="relative group cursor-pointer hover:shadow-lg transition">
+                  {/* Image wrapper */}
+                  <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center rounded-t-lg overflow-hidden">
+                    {product.stock === 0 && (
+                      <Badge className="absolute top-2 left-2 bg-gray-800 text-white">
+                        SOLD OUT
+                      </Badge>
+                    )}
 
-    <Image
-      src={product.image}
-      alt={product.title}
-      width={200}
-      height={200}
-      className="object-contain"
-    />
-  </div>
+                    <Image
+                      src={product.images?.[0] || "/placeholder.png"}
+                      alt={product.name}
+                      width={200}
+                      height={200}
+                      className="object-contain"
+                    />
+                  </div>
 
-  {/* Product Info */}
-  <CardHeader className="p-4">
-    <CardTitle className="text-sm font-medium line-clamp-2">
-      {product.title}
-    </CardTitle>
-    <CardDescription className="mt-1">
-      {product.oldPrice && (
-        <span className="line-through mr-2 text-gray-400">
-          {product.oldPrice}
-        </span>
-      )}
-      {product.price}
-    </CardDescription>
-  </CardHeader>
-</Card>
-
+                  {/* Product Info */}
+                  <CardHeader className="p-4">
+                    <CardTitle className="text-sm font-medium line-clamp-2">
+                      {product.name}
+                    </CardTitle>
+                    <CardDescription className="mt-1">
+                      {product.oldPrice && (
+                        <span className="line-through mr-2 text-gray-400">
+                          Rs{product.oldPrice}
+                        </span>
+                      )}
+                      Rs{product.newPrice}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
             ))}
           </div>
 
@@ -167,24 +154,6 @@ export default function Shop() {
       </div>
 
       <Separator className="my-10 max-w-7xl mx-auto" />
-
-      {/* SEO Text Section */}
-      <div className="max-w-5xl mx-auto px-6 text-center space-y-4 pb-16">
-        <h2 className="text-2xl font-bold">
-          Discover Top-Quality Used Laptops at Competitive Prices in Pakistan
-        </h2>
-        <p className="text-gray-600 text-sm leading-relaxed">
-          Welcome to the premier marketplace for used laptop prices in Pakistan.
-          Whether you are a student, a working professional, or a gadget lover,
-          our extensive selection of second-hand laptops in Pakistan ensures you
-          find the best possible device that fits your budget and needs.
-        </p>
-        <p className="text-gray-600 text-sm leading-relaxed">
-          Looking for the most reliable used laptops in Pakistan? You’ve come to
-          the right place. Our inventory includes a wide range of laptops from
-          leading brands, all available at an affordable price.
-        </p>
-      </div>
     </div>
   );
 }
