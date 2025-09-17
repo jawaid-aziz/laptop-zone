@@ -2,23 +2,27 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Order from "@/models/Order";
 
-// GET single order
+// ✅ GET single order
 export async function GET(req, { params }) {
   try {
     await dbConnect();
-    const order = await Order.findById(params.id)
-      .populate("user", "name email")
-      .populate("products.product", "name price");
+    const order = await Order.findById(params.id).populate(
+      "products.product",
+      "name newPrice images"
+    );
+
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
+
     return NextResponse.json(order, { status: 200 });
   } catch (error) {
+    console.error("Error fetching order:", error);
     return NextResponse.json({ error: "Failed to fetch order" }, { status: 500 });
   }
 }
 
-// UPDATE order (e.g., change status)
+// ✅ UPDATE order (e.g., change status)
 export async function PUT(req, { params }) {
   try {
     await dbConnect();
@@ -27,9 +31,7 @@ export async function PUT(req, { params }) {
     const updated = await Order.findByIdAndUpdate(params.id, body, {
       new: true,
       runValidators: true,
-    })
-      .populate("user", "name email")
-      .populate("products.product", "name price");
+    }).populate("products.product", "name newPrice images");
 
     if (!updated) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
@@ -37,11 +39,12 @@ export async function PUT(req, { params }) {
 
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
+    console.error("Error updating order:", error);
     return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
   }
 }
 
-// DELETE order
+// ✅ DELETE order
 export async function DELETE(req, { params }) {
   try {
     await dbConnect();
@@ -51,8 +54,47 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ message: "Order deleted successfully" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Order deleted successfully" },
+      { status: 200 }
+    );
   } catch (error) {
+    console.error("Error deleting order:", error);
     return NextResponse.json({ error: "Failed to delete order" }, { status: 500 });
+  }
+}
+
+// PATCH: Update order status (e.g., "pending" → "shipped" → "delivered")
+export async function PATCH(req, { params }) {
+  try {
+    await dbConnect();
+    const { status } = await req.json();
+
+    if (!status) {
+      return NextResponse.json(
+        { error: "Status is required" },
+        { status: 400 }
+      );
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      params.id,
+      { status },
+      { new: true, runValidators: true }
+    ).populate("products.product", "name newPrice images");
+
+    if (!updatedOrder) {
+      return NextResponse.json(
+        { error: "Order not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(updatedOrder, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to update order status" },
+      { status: 500 }
+    );
   }
 }
