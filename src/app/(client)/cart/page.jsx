@@ -116,9 +116,11 @@ export default function CartPage() {
               <span>Total</span>
               <span>Rs{subtotal}</span>
             </div>
+            <Link href="/checkout">
             <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
               Proceed to Checkout
             </Button>
+            </Link>
           </Card>
         </div>
       )}
