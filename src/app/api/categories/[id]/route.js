@@ -6,7 +6,8 @@ import Category from "@/models/Category";
 export async function GET(req, { params }) {
   try {
     await dbConnect();
-    const category = await Category.findById(params.id);
+    const { id } = await params;
+    const category = await Category.findById(id);
     if (!category) {
       return NextResponse.json({ error: "Category not found" }, { status: 404 });
     }
@@ -20,9 +21,10 @@ export async function GET(req, { params }) {
 export async function PUT(req, { params }) {
   try {
     await dbConnect();
+    const { id } = await params;
     const body = await req.json();
 
-    const updated = await Category.findByIdAndUpdate(params.id, body, {
+    const updated = await Category.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     });
@@ -41,7 +43,8 @@ export async function PUT(req, { params }) {
 export async function DELETE(req, { params }) {
   try {
     await dbConnect();
-    const deleted = await Category.findByIdAndDelete(params.id);
+    const { id } = await params;
+    const deleted = await Category.findByIdAndDelete(id);
 
     if (!deleted) {
       return NextResponse.json({ error: "Category not found" }, { status: 404 });

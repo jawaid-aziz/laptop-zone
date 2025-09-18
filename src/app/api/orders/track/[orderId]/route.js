@@ -6,7 +6,7 @@ import Order from "@/models/Order";
 export async function GET(req, { params }) {
     try {
         await dbConnect();
-        const { orderId } = params;
+        const { orderId } = await params;
 
         const order = await Order.findOne({ orderId }).populate("items.product"); if (!order) {
             return NextResponse.json({ message: "Order not found" }, { status: 404 });

@@ -24,7 +24,7 @@ export async function GET(req, { params }) {
 export async function PUT(req, { params }) {
   try {
     await dbConnect();
-
+    const { id } = await params;
     const formData = await req.formData();
 
     // Basic fields
@@ -104,7 +104,7 @@ export async function PUT(req, { params }) {
     }
 
     // Update product
-    const updated = await Product.findByIdAndUpdate(params.id, updateData, {
+    const updated = await Product.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
     });
@@ -127,7 +127,8 @@ export async function PUT(req, { params }) {
 export async function DELETE(req, { params }) {
   try {
     await dbConnect();
-    const deleted = await Product.findByIdAndDelete(params.id);
+    const { id } = await params;
+    const deleted = await Product.findByIdAndDelete(id);
 
     if (!deleted) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });

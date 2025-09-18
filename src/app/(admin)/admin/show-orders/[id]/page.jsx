@@ -10,7 +10,8 @@ async function getOrder(id) {
 }
 
 export default async function OrderPage({ params }) {
-  const order = await getOrder(params.id);
+  const { id } = await params;
+  const order = await getOrder(id);
   console.log(order)
 
   return (

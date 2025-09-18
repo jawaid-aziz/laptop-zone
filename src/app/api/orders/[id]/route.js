@@ -6,7 +6,8 @@ import Order from "@/models/Order";
 export async function GET(req, { params }) {
   try {
     await dbConnect();
-    const order = await Order.findById(params.id).populate(
+    const { id } = await params;
+    const order = await Order.findById(id).populate(
       "products.product",
       "name newPrice images"
     );
@@ -26,6 +27,7 @@ export async function GET(req, { params }) {
 export async function PUT(req, { params }) {
   try {
     await dbConnect();
+    const { id } = await params;
     const body = await req.json();
 
     // Recalculate total price based on product prices × quantities
@@ -42,7 +44,7 @@ export async function PUT(req, { params }) {
 
     body.totalPrice = totalPrice;
 
-    const updated = await Order.findByIdAndUpdate(params.id, body, {
+    const updated = await Order.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     }).populate("products.product", "name newPrice images");
@@ -63,7 +65,8 @@ export async function PUT(req, { params }) {
 export async function DELETE(req, { params }) {
   try {
     await dbConnect();
-    const deleted = await Order.findByIdAndDelete(params.id);
+    const { id } = await params;
+    const deleted = await Order.findByIdAndDelete(id);
 
     if (!deleted) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
@@ -83,6 +86,7 @@ export async function DELETE(req, { params }) {
 export async function PATCH(req, { params }) {
   try {
     await dbConnect();
+    const { id } = await params;
     const { status } = await req.json();
 
     if (!status) {
@@ -93,7 +97,7 @@ export async function PATCH(req, { params }) {
     }
 
     const updatedOrder = await Order.findByIdAndUpdate(
-      params.id,
+      id,
       { status },
       { new: true, runValidators: true }
     ).populate("products.product", "name newPrice images");

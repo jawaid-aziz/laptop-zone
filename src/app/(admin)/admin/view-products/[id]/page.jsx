@@ -248,7 +248,8 @@ async function getProduct(id) {
 }
 
 export default async function ProductPage({ params }) {
-  const product = await getProduct(params.id);
+  const { id } = await params;
+  const product = await getProduct(id);
 
   return (
     <div className="container mx-auto p-6">
