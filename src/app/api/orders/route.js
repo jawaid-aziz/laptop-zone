@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Order from "@/models/Order";
+import Product from "@/models/Product";
 
 // ✅ GET all orders
 export async function GET() {

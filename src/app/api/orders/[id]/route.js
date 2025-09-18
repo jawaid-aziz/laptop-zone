@@ -22,11 +22,25 @@ export async function GET(req, { params }) {
   }
 }
 
-// ✅ UPDATE order (e.g., change status)
+// ✅ UPDATE order (recalculate totalPrice when quantities change)
 export async function PUT(req, { params }) {
   try {
     await dbConnect();
     const body = await req.json();
+
+    // Recalculate total price based on product prices × quantities
+    let totalPrice = 0;
+
+    if (body.products && Array.isArray(body.products)) {
+      for (const item of body.products) {
+        const unitPrice =
+          item.product?.newPrice || item.newPrice || 0; // unit price from populated product or body
+        const quantity = item.quantity || 1;
+        totalPrice += unitPrice * quantity;
+      }
+    }
+
+    body.totalPrice = totalPrice;
 
     const updated = await Order.findByIdAndUpdate(params.id, body, {
       new: true,
@@ -43,6 +57,7 @@ export async function PUT(req, { params }) {
     return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
   }
 }
+
 
 // ✅ DELETE order
 export async function DELETE(req, { params }) {
