@@ -20,22 +20,9 @@ const ProductSchema = new mongoose.Schema(
       },
     ],
 
-    // 4) Key features (limited structured fields)
-    keyFeatures: {
-      processor: { type: String },
-      memory: { type: String },
-      storage: { type: String },
-      display: { type: String },
-      graphics: { type: String },
-      buildAndDesign: { type: String },
-      connectivity: { type: String },
-      securityFeatures: { type: String },
-      battery: { type: String },
-      operatingSystem: { type: String },
-      keyboardAndUsability: { type: String },
-      additionalFeatures: { type: String },
-      warrantyAndSupport: { type: String },
-    },
+    keyFeatures: { type: mongoose.Schema.Types.Mixed, default: {} },
+
+    idealUser: String,
   },
   { timestamps: true }
 );

@@ -58,7 +58,7 @@ export async function PUT(req, { params }) {
       }
     }
 
-    // Key Features
+    // Key Features (JSON object, dynamic)
     let keyFeatures = {};
     const keyFeaturesRaw = formData.get("keyFeatures");
     if (keyFeaturesRaw) {
@@ -97,7 +97,7 @@ export async function PUT(req, { params }) {
       specifications,
       keyFeatures,
     };
-
+    updateData.markModified("keyFeatures");
     // Only set images if new ones are uploaded
     if (imageUrls.length > 0) {
       updateData.images = imageUrls;

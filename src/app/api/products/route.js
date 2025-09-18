@@ -22,7 +22,6 @@ export async function POST(req) {
     await dbConnect();
 
     const formData = await req.formData();
-    console.log("Form Data received:", formData);
     // Basic fields
     const name = formData.get("name");
     const brand = formData.get("brand");
@@ -96,7 +95,8 @@ export async function POST(req) {
       specifications,
       keyFeatures,
     });
-
+    
+    newProduct.markModified("keyFeatures");
     await newProduct.save();
 
     return NextResponse.json(newProduct, { status: 201 });

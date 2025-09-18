@@ -43,7 +43,11 @@ export default function AddProductPage() {
     category: "",
     oldPrice: "",
     newPrice: "",
-    keyFeatures: {
+    keyFeatures: {},
+  });
+
+  const keyFeaturesMap = {
+    Laptops: {
       processor: "",
       memory: "",
       storage: "",
@@ -58,7 +62,28 @@ export default function AddProductPage() {
       additionalFeatures: "",
       warrantyAndSupport: "",
     },
-  });
+    "Laptop Accessories": {
+      choiceOfCapacities: "",
+      unmatchedSpeed: "",
+      compactFormFactor: "",
+      versatileCompatibility: "",
+      reliableStorage: "",
+      formFactorsAndInterfaces: "",
+      idealApplications: "",
+    },
+    "Laptop Bags": {
+      multipleZipperedCompartments: "",
+      waterBottlePocket: "",
+      paddedLaptopSleeve: "",
+      paddedShoulderStraps: "",
+      airFlowBackPadding: "",
+      heavyDutyCarryHandle: "",
+      audioInterface: "",
+      model: "",
+      dimensions: "",
+      colors: "",
+    },
+  };
 
   // Fetch categories
   useEffect(() => {
@@ -74,7 +99,15 @@ export default function AddProductPage() {
     if (value === "__new__") {
       setOpen(true);
     } else {
-      setForm({ ...form, category: value });
+      const selected = categories.find((c) => c._id === value);
+
+      const newKeyFeatures = keyFeaturesMap[selected?.name] || {}; // default empty if unknown category
+
+      setForm((prev) => ({
+        ...prev,
+        category: value,
+        keyFeatures: newKeyFeatures,
+      }));
     }
   };
 
@@ -145,70 +178,55 @@ export default function AddProductPage() {
     setImages(images.filter((_, i) => i !== index));
   }
 
-async function handleSubmit(e) {
-  e.preventDefault();
-  try {
-    const formData = new FormData();
+  async function handleSubmit(e) {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
 
-    // Basic fields
-    Object.entries(form).forEach(([key, value]) => {
-      if (key !== "keyFeatures") {
-        formData.append(key, value);
-      }
-    });
+      // Basic fields
+      Object.entries(form).forEach(([key, value]) => {
+        if (key !== "keyFeatures") {
+          formData.append(key, value);
+        }
+      });
 
-    // ✅ serialize tags into JSON
-    formData.append("tags", JSON.stringify(tags));
+      // ✅ serialize tags into JSON
+      formData.append("tags", JSON.stringify(tags));
 
-    // ✅ serialize specs into JSON
-    formData.append("specifications", JSON.stringify(specs));
+      // ✅ serialize specs into JSON
+      formData.append("specifications", JSON.stringify(specs));
 
-    // ✅ serialize keyFeatures into JSON
-    formData.append("keyFeatures", JSON.stringify(form.keyFeatures));
+      // ✅ serialize keyFeatures into JSON
+      formData.append("keyFeatures", JSON.stringify(form.keyFeatures));
 
-    // Images
-    images.forEach((img) => formData.append("images", img));
+      // Images
+      images.forEach((img) => formData.append("images", img));
 
-    const res = await fetch("/api/products", {
-      method: "POST",
-      body: formData,
-    });
+      const res = await fetch("/api/products", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (!res.ok) throw new Error("Failed to save");
+      if (!res.ok) throw new Error("Failed to save");
 
-    alert("✅ Product added successfully!");
-    setForm({
-      name: "",
-      brand: "",
-      stock: "",
-      overview: "",
-      category: "",
-      oldPrice: "",
-      newPrice: "",
-      keyFeatures: {
-        processor: "",
-        memory: "",
-        storage: "",
-        display: "",
-        graphics: "",
-        buildAndDesign: "",
-        connectivity: "",
-        securityFeatures: "",
-        battery: "",
-        operatingSystem: "",
-        keyboardAndUsability: "",
-        additionalFeatures: "",
-        warrantyAndSupport: "",
-      },
-    });
-    setTags([]);
-    setSpecs([{ key: "", value: "" }]);
-    setImages([]);
-  } catch (err) {
-    alert(err.message);
+      alert("✅ Product added successfully!");
+      setForm({
+        name: "",
+        brand: "",
+        stock: "",
+        overview: "",
+        category: "",
+        oldPrice: "",
+        newPrice: "",
+        keyFeatures: {},
+      });
+      setTags([]);
+      setSpecs([{ key: "", value: "" }]);
+      setImages([]);
+    } catch (err) {
+      alert(err.message);
+    }
   }
-}
-
 
   return (
     <div className="min-h-screen bg-gray-50 p-8 flex">
@@ -358,26 +376,28 @@ async function handleSubmit(e) {
             </Accordion>
 
             {/* Key Features */}
-            <div>
-              <h3 className="text-lg font-semibold">Key Features</h3>
-              <div className="space-y-4 mt-2">
-                {Object.keys(form.keyFeatures).map((key) => (
-                  <div key={key}>
-                    <label className="block text-sm font-medium capitalize">
-                      {key.replace(/([A-Z])/g, " $1")}
-                    </label>
-                    <textarea
-                      value={form.keyFeatures[key]}
-                      onChange={(e) =>
-                        handleKeyFeatureChange(key, e.target.value)
-                      }
-                      className="w-full border rounded-md p-2 h-25"
-                      placeholder={`Enter ${key} details...`}
-                    />
-                  </div>
-                ))}
+            {form.category && (
+              <div>
+                <h3 className="text-lg font-semibold">Key Features</h3>
+                <div className="space-y-4 mt-2">
+                  {Object.keys(form.keyFeatures).map((key) => (
+                    <div key={key}>
+                      <label className="block text-sm font-medium capitalize">
+                        {key.replace(/([A-Z])/g, " $1")}
+                      </label>
+                      <textarea
+                        value={form.keyFeatures[key]}
+                        onChange={(e) =>
+                          handleKeyFeatureChange(key, e.target.value)
+                        }
+                        className="w-full border rounded-md p-2 h-25"
+                        placeholder={`Enter ${key} details...`}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </form>
