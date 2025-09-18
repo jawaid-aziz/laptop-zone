@@ -31,10 +31,10 @@ export function Footer() {
         <div>
           <h3 className="font-semibold mb-5 text-sm tracking-wide uppercase text-white">Support</h3>
           <ul className="space-y-3 text-sm">
-            <li><Link href="#" className="hover:text-white">Contact Us</Link></li>
-            <li><Link href="#" className="hover:text-white">FAQs</Link></li>
-            <li><Link href="#" className="hover:text-white">Store Locator</Link></li>
-            <li><Link href="#" className="hover:text-white">Shipping</Link></li>
+            <li><Link href="/contact-us" className="hover:text-white">Contact Us</Link></li>
+            <li><Link href="/faq" className="hover:text-white">FAQs</Link></li>
+            <li><Link href="/store-locator" className="hover:text-white">Store Locator</Link></li>
+            <li><Link href="/shipping" className="hover:text-white">Shipping</Link></li>
           </ul>
         </div>
 
@@ -52,7 +52,7 @@ export function Footer() {
         <div>
           <h3 className="font-semibold mb-5 text-sm tracking-wide uppercase text-white">Company</h3>
           <ul className="space-y-3 text-sm">
-            <li><Link href="#" className="hover:text-white">About Us</Link></li>
+            <li><Link href="about-us" className="hover:text-white">About Us</Link></li>
             <li><Link href="#" className="hover:text-white">Laptop Repair Service</Link></li>
             <li><Link href="#" className="hover:text-white">Laptop Rental</Link></li>
             <li><Link href="#" className="hover:text-white">Blog</Link></li>
@@ -71,8 +71,8 @@ export function Footer() {
       <div className="border-t border-gray-700 mt-6 py-5 px-6 flex flex-col md:flex-row justify-between items-center text-xs text-gray-400">
         <p>© 2024 Laptop Zone. All rights reserved.</p>
         <div className="flex gap-6 mt-3 md:mt-0">
-          <Link href="#" className="hover:text-white">Terms & Conditions</Link>
-          <Link href="#" className="hover:text-white">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-white">Terms & Conditions</Link>
+          <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
         </div>
       </div>
     </footer>

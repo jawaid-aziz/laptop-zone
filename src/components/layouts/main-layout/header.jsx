@@ -34,10 +34,10 @@ export default function Header() {
           <Link href="/" className="hover:text-primary transition">
             Home
           </Link>
-          <Link href="/" className="hover:text-primary transition">
+          <Link href="/shop" className="hover:text-primary transition">
             Shop
           </Link>
-          <Link href="/" className="hover:text-primary transition">
+          <Link href="/about-us" className="hover:text-primary transition">
             About Us
           </Link>
         </nav>
