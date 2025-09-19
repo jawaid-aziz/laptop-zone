@@ -14,9 +14,9 @@ import { LogOut, Menu, UserCircle } from "lucide-react";
 export const Header = () => {
 const router = useRouter();
 
-  const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    router.push("/auth/login");
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
   };
 
   return (
