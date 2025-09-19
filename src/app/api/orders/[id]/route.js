@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Order from "@/models/Order";
+import Product from "@/models/Product";
 
 // ✅ GET single order
 export async function GET(req, { params }) {
@@ -30,27 +31,43 @@ export async function PUT(req, { params }) {
     const { id } = await params;
     const body = await req.json();
 
+    // Fetch existing order before updating (so we can compare old status)
+    const existingOrder = await Order.findById(id).populate("products.product");
+    if (!existingOrder) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
     // Recalculate total price based on product prices × quantities
     let totalPrice = 0;
-
     if (body.products && Array.isArray(body.products)) {
       for (const item of body.products) {
         const unitPrice =
-          item.product?.newPrice || item.newPrice || 0; // unit price from populated product or body
+          item.product?.newPrice || item.newPrice || 0;
         const quantity = item.quantity || 1;
         totalPrice += unitPrice * quantity;
       }
     }
-
     body.totalPrice = totalPrice;
 
+    // Update order
     const updated = await Order.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     }).populate("products.product", "name newPrice images");
 
-    if (!updated) {
-      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    // ✅ Restore stock only if status changed from something else → cancelled
+    if (
+      body.status === "cancelled" &&
+      existingOrder.status !== "cancelled" &&
+      updated.products
+    ) {
+      for (const item of updated.products) {
+        const product = await Product.findById(item.product._id);
+        if (product) {
+          product.stock += item.quantity; // restore stock
+          await product.save();
+        }
+      }
     }
 
     return NextResponse.json(updated, { status: 200 });
