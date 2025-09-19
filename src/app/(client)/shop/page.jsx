@@ -25,9 +25,11 @@ import {
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     async function fetchProducts() {
@@ -36,7 +38,11 @@ export default function Shop() {
         const data = await res.json();
         setProducts(data);
       } catch (error) {
-        console.error("Failed to load products:", error);
+        toast({
+          title: "❌ Error",
+          description: "Failed to load products.",
+          variant: "destructive",
+        });
       }
     }
     fetchProducts();

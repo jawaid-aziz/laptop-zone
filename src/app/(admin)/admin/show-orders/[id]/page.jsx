@@ -12,7 +12,6 @@ async function getOrder(id) {
 export default async function OrderPage({ params }) {
   const { id } = await params;
   const order = await getOrder(id);
-  console.log(order)
 
   return (
     <div className="container mx-auto p-6">

@@ -5,11 +5,38 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function OrderEditor({ initialOrder }) {
   const [order, setOrder] = useState(initialOrder);
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  // ✅ Show toast if initialOrder is missing
+  useEffect(() => {
+    if (!initialOrder) {
+      toast({
+        title: "❌ Error",
+        description: "Order not found or failed to load.",
+        variant: "destructive",
+      });
+    }
+  }, [initialOrder, toast]);
+
+  if (!initialOrder) {
+    return (
+      <div className="p-6 text-red-500">
+        Could not load order. Please try again later.
+      </div>
+    );
+  }
 
   async function handleSave(e) {
     e.preventDefault();
@@ -24,9 +51,17 @@ export default function OrderEditor({ initialOrder }) {
 
       if (!res.ok) throw new Error("Failed to update order");
 
-      alert("Order updated successfully");
+      toast({
+        title: "✅ Order Updated",
+        description: "The order has been saved successfully.",
+      });
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      toast({
+        title: "❌ Error",
+        description:
+          err.message || "Something went wrong while updating the order.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -54,14 +89,18 @@ export default function OrderEditor({ initialOrder }) {
                 <Label>First Name</Label>
                 <Input
                   value={order.firstName}
-                  onChange={(e) => setOrder({ ...order, firstName: e.target.value })}
+                  onChange={(e) =>
+                    setOrder({ ...order, firstName: e.target.value })
+                  }
                 />
               </div>
               <div>
                 <Label>Last Name</Label>
                 <Input
                   value={order.lastName}
-                  onChange={(e) => setOrder({ ...order, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setOrder({ ...order, lastName: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -89,7 +128,9 @@ export default function OrderEditor({ initialOrder }) {
               <Label>Address</Label>
               <Input
                 value={order.address}
-                onChange={(e) => setOrder({ ...order, address: e.target.value })}
+                onChange={(e) =>
+                  setOrder({ ...order, address: e.target.value })
+                }
               />
             </div>
             <div className="grid grid-cols-3 gap-4">
@@ -104,14 +145,18 @@ export default function OrderEditor({ initialOrder }) {
                 <Label>Country</Label>
                 <Input
                   value={order.country}
-                  onChange={(e) => setOrder({ ...order, country: e.target.value })}
+                  onChange={(e) =>
+                    setOrder({ ...order, country: e.target.value })
+                  }
                 />
               </div>
               <div>
                 <Label>Postal Code</Label>
                 <Input
                   value={order.postalCode}
-                  onChange={(e) => setOrder({ ...order, postalCode: e.target.value })}
+                  onChange={(e) =>
+                    setOrder({ ...order, postalCode: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -143,7 +188,9 @@ export default function OrderEditor({ initialOrder }) {
                       type="number"
                       value={item.quantity}
                       min={1}
-                      onChange={(e) => handleQuantityChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleQuantityChange(index, e.target.value)
+                      }
                       className="w-20"
                     />
                   </div>

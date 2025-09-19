@@ -17,13 +17,22 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useToast } from "@/components/ui/use-toast";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Dashboard() {
   const { data, error } = useSWR("/api/dashboard/overview", fetcher);
+  const { toast } = useToast();
 
-  if (error) return <div className="p-6">Failed to load</div>;
+  if (error) {
+    toast({
+      title: "❌ Error",
+      description: "Failed to load dashboard data.",
+      variant: "destructive",
+    });
+    return <div className="p-6">Failed to load</div>;
+  }
   if (!data)
     return (
       <div className="flex items-center justify-center h-64">

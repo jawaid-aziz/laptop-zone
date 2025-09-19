@@ -14,10 +14,12 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     async function fetchOrders() {
@@ -26,7 +28,11 @@ export default function OrdersPage() {
         const data = await res.json();
         setOrders(data);
       } catch (err) {
-        console.error("Failed to fetch orders", err);
+        toast({
+          variant: "destructive",
+          title: "❌ Failed to fetch orders",
+          description: err.message,
+        });
       } finally {
         setLoading(false);
       }

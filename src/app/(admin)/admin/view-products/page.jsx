@@ -6,9 +6,11 @@ import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function AllProducts() {
   const [products, setProducts] = useState([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -17,7 +19,11 @@ export default function AllProducts() {
         const data = await res.json();
         setProducts(data);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        toast({
+          variant: "destructive",
+          title: "❌ Failed to fetch products",
+          description: err.message,
+        });
       }
     };
     fetchProducts();

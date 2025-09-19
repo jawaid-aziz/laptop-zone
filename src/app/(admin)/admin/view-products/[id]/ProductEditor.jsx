@@ -6,12 +6,33 @@ import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function ProductEditor({ initialProduct }) {
   const [product, setProduct] = useState(initialProduct);
   const [editedProduct, setEditedProduct] = useState(initialProduct);
   const [isDirty, setIsDirty] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  // ✅ Show toast if initialProduct is missing
+  useEffect(() => {
+    if (!initialProduct) {
+      toast({
+        title: "❌ Error",
+        description: "Product not found or failed to load.",
+        variant: "destructive",
+      });
+    }
+  }, [initialProduct, toast]);
+
+  if (!initialProduct) {
+    return (
+      <div className="p-6 text-red-500">
+        Could not load product. Please try again later.
+      </div>
+    );
+  }
 
   // Track changes
   useEffect(() => {
@@ -77,8 +98,17 @@ export default function ProductEditor({ initialProduct }) {
       setProduct(updated);
       setEditedProduct(updated);
       setIsDirty(false);
+      toast({
+        title: "✅ Product Updated",
+        description: "The product has been saved successfully.",
+      });
     } catch (error) {
-      console.error("Save error:", error);
+      toast({
+        title: "❌ Error",
+        description:
+          error.message || "Something went wrong while updating the product.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -98,8 +128,16 @@ export default function ProductEditor({ initialProduct }) {
 
       // optional: redirect or clear state
       setProduct(null);
+      toast({
+        title: "✅ Product Deleted",
+        description: "The product has been deleted successfully.",
+      });
     } catch (error) {
-      console.error("Delete error:", error);
+      toast({
+        title: "❌ Error",
+        description: error.message || "Something went wrong while deleting the product.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -272,7 +310,11 @@ export default function ProductEditor({ initialProduct }) {
 
         {/* Save/Delete */}
         <div className="flex justify-end gap-4 pt-4">
-          <Button variant="destructive" onClick={handleDelete} disabled={loading}>
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={loading}
+          >
             {loading ? "Deleting..." : "Delete"}
           </Button>
           <Button disabled={!isDirty || loading} onClick={handleSave}>

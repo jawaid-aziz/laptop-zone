@@ -27,8 +27,11 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function AddProductPage() {
+  const { toast } = useToast();
+
   const [categories, setCategories] = useState([]);
   const [open, setOpen] = useState(false);
   const [newCategory, setNewCategory] = useState("");
@@ -209,7 +212,10 @@ export default function AddProductPage() {
 
       if (!res.ok) throw new Error("Failed to save");
 
-      alert("✅ Product added successfully!");
+      toast({
+        title: "✅ Product added successfully!",
+        description: "Your product has been saved to the database.",
+      });
       setForm({
         name: "",
         brand: "",
@@ -224,7 +230,11 @@ export default function AddProductPage() {
       setSpecs([{ key: "", value: "" }]);
       setImages([]);
     } catch (err) {
-      alert(err.message);
+      toast({
+        variant: "destructive",
+        title: "❌ Failed to save product",
+        description: err.message,
+      });
     }
   }
 
