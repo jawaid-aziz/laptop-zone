@@ -1,5 +1,6 @@
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import Toaster from "@/components/ui/toaster";
 
 export const metadata = {
   title: "Laptop Zone",
@@ -10,9 +11,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+      <Toaster>
       <CartProvider>
         {children}
       </CartProvider>
+      </Toaster>
       </body>
     </html>
   );

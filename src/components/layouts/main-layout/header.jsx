@@ -63,6 +63,7 @@ export default function Header() {
           </Button>
 
           {/* Cart Icon */}
+          <Link href="/cart">
           <Button variant="ghost" size="icon" className="relative">
             <ShoppingCart className="w-5 h-5" />
             {/* Cart badge */}
@@ -72,6 +73,7 @@ export default function Header() {
               </span>
             )}
           </Button>
+          </Link>
         </div>
       </div>
     </header>
