@@ -44,7 +44,8 @@ export default function ProductEditor({ initialProduct }) {
       formData.append("brand", editedProduct.brand);
       formData.append("stock", editedProduct.stock);
       formData.append("overview", editedProduct.overview);
-      formData.append("category", editedProduct.category);
+      formData.append("category", editedProduct.category._id);
+
       formData.append("oldPrice", editedProduct.oldPrice);
       formData.append("newPrice", editedProduct.newPrice);
 
@@ -93,7 +94,7 @@ export default function ProductEditor({ initialProduct }) {
       if (!res.ok) throw new Error("Failed to delete product");
 
       const result = await res.json();
-      console.log("Deleted:", result);
+      router.push("/admin/view-products");
 
       // optional: redirect or clear state
       setProduct(null);

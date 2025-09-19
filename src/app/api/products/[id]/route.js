@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Product from "@/models/Product";
 import path from "path";
-import fs from "fs";
+import fs from "fs/promises";
 
 // GET single product
 export async function GET(req, { params }) {
   try {
     await dbConnect();
-    
+
     const { id } = await params; // 👈 must await
     const product = await Product.findById(id).populate("category");
     if (!product) {
@@ -32,9 +32,14 @@ export async function PUT(req, { params }) {
     const brand = formData.get("brand");
     const stock = formData.get("stock");
     const overview = formData.get("overview");
-    const category = formData.get("category");
-    const oldPrice = formData.get("oldPrice");
-    const newPrice = formData.get("newPrice");
+
+    const oldPriceRaw = formData.get("oldPrice");
+    const oldPrice = oldPriceRaw && oldPriceRaw !== "null" ? Number(oldPriceRaw) : undefined;
+
+    const newPriceRaw = formData.get("newPrice");
+    const newPrice = newPriceRaw && newPriceRaw !== "null" ? Number(newPriceRaw) : undefined;
+
+    let category = formData.get("category");
 
     // Tags
     let tags = [];
@@ -97,7 +102,7 @@ export async function PUT(req, { params }) {
       specifications,
       keyFeatures,
     };
-    updateData.markModified("keyFeatures");
+
     // Only set images if new ones are uploaded
     if (imageUrls.length > 0) {
       updateData.images = imageUrls;
