@@ -4,6 +4,7 @@ import { promises as fs } from "fs";
 import dbConnect from "@/lib/dbConnect";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
+import cloudinary from "@/lib/cloudinary";
 
 export async function GET() {
   try {
@@ -65,21 +66,26 @@ export async function POST(req) {
       }
     }
 
-    // File handling
+    // **Cloudinary image upload**
     const files = formData.getAll("images");
-    const uploadDir = path.join(process.cwd(), "public/uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-
     const imageUrls = [];
 
     for (const file of files) {
       if (file && file.name) {
-        const filePath = path.join(uploadDir, file.name);
         const arrayBuffer = await file.arrayBuffer();
-        await fs.writeFile(filePath, Buffer.from(arrayBuffer));
-        imageUrls.push(`/uploads/${file.name}`);
+        const base64 = Buffer.from(arrayBuffer).toString("base64");
+
+        // Cloudinary accepts data URLs like "data:<mime>;base64,<data>"
+        const dataUrl = `data:${file.type};base64,${base64}`;
+
+        const uploadResult = await cloudinary.uploader.upload(dataUrl, {
+          folder: "laptop-zone",
+        });
+
+        imageUrls.push(uploadResult.secure_url);
       }
     }
+
 
     // Save product
     const newProduct = new Product({
@@ -95,7 +101,7 @@ export async function POST(req) {
       specifications,
       keyFeatures,
     });
-    
+
     newProduct.markModified("keyFeatures");
     await newProduct.save();
 

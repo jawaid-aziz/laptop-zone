@@ -29,7 +29,6 @@ export default function AuthPage() {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "Something went wrong");
 
-      alert(result.message || `Login success!`);
       router.push("/admin");
     } catch (err) {
       alert(err.message);

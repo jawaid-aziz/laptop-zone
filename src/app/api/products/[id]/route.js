@@ -3,6 +3,7 @@ import dbConnect from "@/lib/dbConnect";
 import Product from "@/models/Product";
 import path from "path";
 import fs from "fs/promises";
+import cloudinary from "@/lib/cloudinary";
 
 // GET single product
 export async function GET(req, { params }) {
@@ -74,18 +75,23 @@ export async function PUT(req, { params }) {
       }
     }
 
-    // File handling (new images)
+    // **Cloudinary image upload**
     const files = formData.getAll("images");
-    const uploadDir = path.join(process.cwd(), "public/uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-
     const imageUrls = [];
+
     for (const file of files) {
       if (file && file.name) {
-        const filePath = path.join(uploadDir, file.name);
         const arrayBuffer = await file.arrayBuffer();
-        await fs.writeFile(filePath, Buffer.from(arrayBuffer));
-        imageUrls.push(`/uploads/${file.name}`);
+        const base64 = Buffer.from(arrayBuffer).toString("base64");
+
+        // Cloudinary accepts data URLs like "data:<mime>;base64,<data>"
+        const dataUrl = `data:${file.type};base64,${base64}`;
+
+        const uploadResult = await cloudinary.uploader.upload(dataUrl, {
+          folder: "laptop-zone",
+        });
+
+        imageUrls.push(uploadResult.secure_url);
       }
     }
 
@@ -98,15 +104,11 @@ export async function PUT(req, { params }) {
       category,
       oldPrice,
       newPrice,
+      images: imageUrls,
       tags,
       specifications,
       keyFeatures,
     };
-
-    // Only set images if new ones are uploaded
-    if (imageUrls.length > 0) {
-      updateData.images = imageUrls;
-    }
 
     // Update product
     const updated = await Product.findByIdAndUpdate(id, updateData, {

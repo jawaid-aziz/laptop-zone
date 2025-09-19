@@ -54,9 +54,9 @@ const router = useRouter();
     },
   ];
 
-  const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    router.push("/auth/login");
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
   };
 
   const toggleMenu = (title) => {
