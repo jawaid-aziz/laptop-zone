@@ -7,6 +7,7 @@ import { Table, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 export default function ProductEditor({ initialProduct }) {
   const [product, setProduct] = useState(initialProduct);
@@ -14,6 +15,7 @@ export default function ProductEditor({ initialProduct }) {
   const [isDirty, setIsDirty] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   // ✅ Show toast if initialProduct is missing
   useEffect(() => {

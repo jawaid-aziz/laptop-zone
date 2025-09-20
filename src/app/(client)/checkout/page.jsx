@@ -14,7 +14,7 @@
   export default function CheckoutPage() {
     const { cart, total, clearCart } = useCart();
     const { toast } = useToast();
-
+    const router = useRouter();
     const [form, setForm] = useState({
       firstName: "",
       lastName: "",
@@ -71,7 +71,7 @@
       const data = await res.json();
 
       clearCart();
-      // router.push(`/order-confirmation/${data._id}`);
+      router.push(`/order-confirmation/${data._id}`);
       toast({
         title: "✅ Success",
         description: "Order placed successfully!",

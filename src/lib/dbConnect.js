@@ -3,17 +3,20 @@ import mongoose from "mongoose";
 let isConnected = false; // Track the connection state
 
 async function dbConnect() {
-  if (isConnected) {
-    // If already connected, use existing connection
-    return;
-  }
-    if (mongoose.connection.readyState >= 1) {
+  if (isConnected) return;
+
+  if (mongoose.connection.readyState >= 1) {
     isConnected = true;
     return;
   }
+
   try {
-    // Replace with your local MongoDB URL
-    const mongoURI = "mongodb://127.0.0.1:27017/laptop-zone";
+    // ✅ Use environment variable instead of hardcoding
+    const mongoURI = "mongodb+srv://mangoManMongo:<secret-hai>@cluster0.m9e0vmr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
+    if (!mongoURI) {
+      throw new Error("❌ MONGODB_URI is not defined in .env.local");
+    }
 
     const db = await mongoose.connect(mongoURI, {
       useNewUrlParser: true,
@@ -21,7 +24,7 @@ async function dbConnect() {
     });
 
     isConnected = db.connections[0].readyState;
-    console.log("✅ MongoDB connected");
+    console.log("✅ MongoDB connected online");
   } catch (error) {
     console.error("❌ MongoDB connection error:", error);
     throw error;
