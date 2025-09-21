@@ -17,7 +17,7 @@ export default function AboutPage() {
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-gray-900 to-gray-700 text-white py-16 px-6 text-center">
-        <h1 className="text-4xl font-extrabold mb-4">About Prime Traders</h1>
+        <h1 className="text-4xl font-extrabold mb-4">About Laptop Zone</h1>
         <p className="max-w-2xl mx-auto text-lg text-gray-200">
           Your trusted destination for premium branded laptops. We combine{" "}
           <span className="font-semibold">quality, trust, and speed</span> to
@@ -28,7 +28,7 @@ export default function AboutPage() {
       {/* Why Choose Us */}
       <section className="py-16 px-6 bg-muted/30">
         <h2 className="text-3xl font-bold text-center mb-10">
-          Why Choose Prime Traders?
+          Why Choose Laptop Zone?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
           <Card className="p-6 flex flex-col items-center text-center">
@@ -77,7 +77,7 @@ export default function AboutPage() {
       <section className="py-16 px-6 text-center">
         <h2 className="text-3xl font-bold mb-6">Our Vision</h2>
         <p className="max-w-3xl mx-auto text-lg text-muted-foreground leading-relaxed">
-          At <span className="font-semibold">Prime Traders</span>, our vision is
+          At <span className="font-semibold">Laptop Zone</span>, our vision is
           to make premium technology accessible to everyone. We believe that
           laptops aren’t just devices—they’re tools of empowerment that fuel{" "}
           <span className="italic">innovation, education, and opportunity</span>.
@@ -99,7 +99,7 @@ export default function AboutPage() {
               <Card className="rounded-2xl shadow-md">
                 <CardContent className="p-6 text-center">
                   <p className="italic text-lg">
-                    “Prime Traders delivered my laptop in 3 days, perfectly
+                    “Laptop Zone delivered my laptop in 3 days, perfectly
                     packed. Amazing service!”
                   </p>
                   <p className="mt-4 font-semibold">– Ahmed R.</p>

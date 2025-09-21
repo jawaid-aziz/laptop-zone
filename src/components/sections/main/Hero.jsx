@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -23,15 +24,17 @@ export default function Hero() {
             New Arrivals
           </span>
           <h1 className="text-4xl md:text-5xl font-bold leading-tight text-black">
-            Get Your Dream Laptop with Easy Installments
+            Find the Right Laptop <br />for Your Needs
           </h1>
           <p className="text-gray-800 max-w-lg">
-            Prime Traders brings you the latest laptops, accessories, and gadgets — all at competitive prices, with flexible payment plans tailored for you.
+            Laptop Zone brings you the latest laptops, accessories, and gadgets — all at competitive prices, with flexible payment plans tailored for you.
           </p>
           <div className="flex gap-4">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white">
-              Shop Now
-            </Button>
+            <Link href="/shop">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white">
+                Shop Now
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

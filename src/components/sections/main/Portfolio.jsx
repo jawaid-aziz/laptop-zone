@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
+import Link from "next/link";
 
 const promoBanners = [
   {
@@ -9,6 +10,7 @@ const promoBanners = [
     image: "/banners/student.webp",
     buttonText: "Shop Now",
     align: "left", // controls text alignment
+    link: "/shop"
   },
   {
     title: "Laptop Repair & Maintenance",
@@ -16,6 +18,7 @@ const promoBanners = [
     image: "/banners/repair.webp",
     buttonText: "Book Service",
     align: "left",
+    link: "#"
   },
 ];
 
@@ -24,6 +27,7 @@ export default function Portfolio() {
     <section className="bg-white py-12">
       <div className="max-w-7xl mx-auto px-6 grid gap-6 sm:grid-cols-2">
         {promoBanners.map((banner, i) => (
+          <Link key={i} href={banner.link} passHref>
           <Card
             key={i}
             className="relative overflow-hidden group cursor-pointer rounded-xl border-0 h-64"
@@ -53,6 +57,7 @@ export default function Portfolio() {
               </Button>
             </div>
           </Card>
+          </Link>
         ))}
       </div>
     </section>

@@ -120,7 +120,7 @@ export default function OrderConfirmationPage({params}) {
 
       <div className="text-center mt-10 text-lg font-semibold">
         ✅ Thank you for shopping with{" "}
-        <span className="text-primary">Prime Traders</span>!
+        <span className="text-primary">Laptop Zone</span>!
       </div>
     </div>
   );

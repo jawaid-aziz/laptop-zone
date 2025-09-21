@@ -10,7 +10,7 @@ export function Footer() {
         
         {/* Logo & Socials */}
         <div className="space-y-2">
-          <Image src="/logo.png" alt="Laptop Zone" width={180} height={70} />
+          <Image src="/logo_boldText.png" alt="Laptop Zone" width={180} height={70} />
           <div className="flex gap-5">
             <Link href="#" aria-label="Facebook">
               <Facebook size={18} className="hover:text-white transition-colors" />
@@ -33,7 +33,7 @@ export function Footer() {
           <ul className="space-y-3 text-sm">
             <li><Link href="/contact-us" className="hover:text-white">Contact Us</Link></li>
             <li><Link href="/faq" className="hover:text-white">FAQs</Link></li>
-            <li><Link href="/store-locator" className="hover:text-white">Store Locator</Link></li>
+            <li><Link href="#" className="hover:text-white">Store Locator</Link></li>
             <li><Link href="/shipping" className="hover:text-white">Shipping</Link></li>
           </ul>
         </div>
@@ -55,21 +55,20 @@ export function Footer() {
             <li><Link href="about-us" className="hover:text-white">About Us</Link></li>
             <li><Link href="#" className="hover:text-white">Laptop Repair Service</Link></li>
             <li><Link href="#" className="hover:text-white">Laptop Rental</Link></li>
-            <li><Link href="#" className="hover:text-white">Blog</Link></li>
           </ul>
         </div>
 
         {/* Contact */}
         <div>
           <h3 className="font-semibold mb-5 text-sm tracking-wide uppercase text-white">Contact</h3>
-          <p className="text-sm">+92 300 3219047</p>
+          <p className="text-sm">+92 300 3210097</p>
           <p className="text-sm">support@laptopzone.pk</p>
         </div>
       </div>
 
       {/* Bottom bar */}
       <div className="border-t border-gray-700 mt-6 py-5 px-6 flex flex-col md:flex-row justify-between items-center text-xs text-gray-400">
-        <p>© 2024 Laptop Zone. All rights reserved.</p>
+        <p>© 2025 Laptop Zone. All rights reserved.</p>
         <div className="flex gap-6 mt-3 md:mt-0">
           <Link href="/terms" className="hover:text-white">Terms & Conditions</Link>
           <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>

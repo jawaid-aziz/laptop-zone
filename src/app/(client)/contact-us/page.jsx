@@ -37,11 +37,11 @@ export default function ContactPage() {
           <p>Fill out our form and we will contact you within 24 hours.</p>
           <div>
             <p className="font-semibold">Customer Service:</p>
-            <p>support@primetraders.pk</p>
+            <p>support@laptopzone.pk</p>
           </div>
           <div>
             <p className="font-semibold">Corporate:</p>
-            <p>corporate@example.com</p>
+            <p>corporate@laptopzone.pk</p>
           </div>
         </div>
 

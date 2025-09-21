@@ -12,7 +12,7 @@ export default function ShippingPage() {
       <Card className="mb-8">
         <CardContent className="space-y-4 pt-3">
           <p>
-            Welcome to <span className="font-semibold">Prime Traders</span>, your
+            Welcome to <span className="font-semibold">Laptop Zone</span>, your
             trusted destination for high-quality branded laptops delivered
             securely and swiftly to your doorstep.
           </p>
@@ -35,7 +35,7 @@ export default function ShippingPage() {
         <Separator />
         <CardContent className="pt-3">
           <p>
-            At Prime Traders, we go above and beyond to safeguard your laptop
+            At Laptop Zone, we go above and beyond to safeguard your laptop
             during transit. We recognize the value and importance of your
             investment, and we take the utmost care in packaging to prevent any
             damage or mishandling during shipping.
@@ -77,8 +77,8 @@ export default function ShippingPage() {
         <Separator />
         <CardContent className="pt-3">
           <p>
-            We want you to be completely satisfied with your purchase from Prime
-            Traders. That’s why we offer a{" "}
+            We want you to be completely satisfied with your purchase from Laptop
+            Zone. That’s why we offer a{" "}
             <span className="font-semibold">14-day money-back guarantee</span>.
           </p>
           <p className="mt-4">
@@ -113,7 +113,7 @@ export default function ShippingPage() {
       </Card>
 
       <p className="mt-8 text-center text-sm text-muted-foreground">
-        Thank you for choosing <span className="font-semibold">Prime Traders</span>{" "}
+        Thank you for choosing <span className="font-semibold">Laptop Zone</span>{" "}
         for your branded laptop needs. We look forward to providing you with a
         seamless shopping experience, secure packaging, and prompt delivery, all
         backed by our commitment to your satisfaction.
