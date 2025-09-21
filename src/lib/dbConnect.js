@@ -12,7 +12,7 @@ async function dbConnect() {
 
   try {
     // ✅ Use environment variable instead of hardcoding
-    const mongoURI = "mongodb+srv://mangoManMongo:<secret-hai>@cluster0.m9e0vmr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+    const mongoURI = "mongodb+srv://mangoManMongo:secret-hai@cluster0.m9e0vmr.mongodb.net/laptop-zone?retryWrites=true&w=majority&appName=Cluster0";
 
     if (!mongoURI) {
       throw new Error("❌ MONGODB_URI is not defined in .env.local");
