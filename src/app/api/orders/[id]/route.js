@@ -81,15 +81,6 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    let totalPrice = 0;
-    if (body.products && Array.isArray(body.products)) {
-      for (const item of body.products) {
-        const unitPrice = item.newPrice || item.product?.newPrice || 0;
-        totalPrice += unitPrice * (item.quantity || 1);
-      }
-    }
-    body.totalPrice = totalPrice;
-
     const updated = await Order.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,

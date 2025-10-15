@@ -38,6 +38,25 @@ export default function OrderEditor({ initialOrder }) {
     );
   }
 
+  // ✅ Update product quantity and recalc total
+  const handleQuantityChange = (index, value) => {
+    const updatedProducts = [...order.products];
+    updatedProducts[index].quantity = Number(value);
+
+    // Recalculate finalPrice for that product
+    const item = updatedProducts[index];
+    updatedProducts[index].finalPrice = item.basePrice * item.quantity;
+
+    setOrder({ ...order, products: updatedProducts, totalPrice: item.finalPrice });
+  };
+
+  // ✅ Handle direct price edits (optional for admin flexibility)
+  const handleBasePriceChange = (index, value) => {
+    const updatedProducts = [...order.products];
+    updatedProducts[index].basePrice = Number(value);
+    handleQuantityChange(index, updatedProducts[index].quantity); // recalc
+  };
+
   async function handleSave(e) {
     e.preventDefault();
     setLoading(true);
@@ -67,13 +86,6 @@ export default function OrderEditor({ initialOrder }) {
     }
   }
 
-  // Update product quantity
-  const handleQuantityChange = (index, value) => {
-    const updatedProducts = [...order.products];
-    updatedProducts[index].quantity = Number(value);
-    setOrder({ ...order, products: updatedProducts });
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -81,7 +93,7 @@ export default function OrderEditor({ initialOrder }) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSave} className="space-y-8">
-          {/* Customer Information */}
+          {/* CUSTOMER INFORMATION */}
           <div className="space-y-3">
             <h2 className="font-semibold text-lg">Customer Information</h2>
             <div className="grid grid-cols-2 gap-4">
@@ -109,19 +121,23 @@ export default function OrderEditor({ initialOrder }) {
               <Input
                 type="email"
                 value={order.email}
-                onChange={(e) => setOrder({ ...order, email: e.target.value })}
+                onChange={(e) =>
+                  setOrder({ ...order, email: e.target.value })
+                }
               />
             </div>
             <div>
               <Label>Phone</Label>
               <Input
                 value={order.phone}
-                onChange={(e) => setOrder({ ...order, phone: e.target.value })}
+                onChange={(e) =>
+                  setOrder({ ...order, phone: e.target.value })
+                }
               />
             </div>
           </div>
 
-          {/* Address */}
+          {/* SHIPPING ADDRESS */}
           <div className="space-y-3">
             <h2 className="font-semibold text-lg">Shipping Address</h2>
             <div>
@@ -138,7 +154,9 @@ export default function OrderEditor({ initialOrder }) {
                 <Label>City</Label>
                 <Input
                   value={order.city}
-                  onChange={(e) => setOrder({ ...order, city: e.target.value })}
+                  onChange={(e) =>
+                    setOrder({ ...order, city: e.target.value })
+                  }
                 />
               </div>
               <div>
@@ -162,23 +180,23 @@ export default function OrderEditor({ initialOrder }) {
             </div>
           </div>
 
-          {/* Products */}
+          {/* PRODUCTS */}
           <div className="space-y-3">
             <h2 className="font-semibold text-lg">Products</h2>
             {order.products.map((item, index) => (
-              <Card key={item._id} className="p-3">
+              <Card key={index} className="p-3 space-y-3">
                 <div className="flex items-center gap-4">
                   {/* Product Image */}
                   <img
-                    src={item.product.images[0]}
-                    alt={item.product.name}
+                    src={item.product?.images?.[0]}
+                    alt={item.product?.name}
                     className="w-16 h-16 rounded object-cover border"
                   />
                   {/* Product Info */}
                   <div className="flex-1">
-                    <p className="font-medium">{item.product.name}</p>
+                    <p className="font-medium">{item.product?.name}</p>
                     <p className="text-sm text-gray-500">
-                      Price: Rs {item.product.newPrice.toLocaleString()}
+                      Base Price: Rs {item.basePrice?.toLocaleString()}
                     </p>
                   </div>
                   {/* Editable Quantity */}
@@ -195,11 +213,51 @@ export default function OrderEditor({ initialOrder }) {
                     />
                   </div>
                 </div>
+
+                {/* ✅ Variant details */}
+                {item.selectedVariants?.length > 0 && (
+                  <div className="ml-20 space-y-1">
+                    <h4 className="text-sm font-semibold">Selected Variants:</h4>
+                    {item.selectedVariants.map((variant, i) => (
+                      <div
+                        key={i}
+                        className="text-sm text-gray-600 flex justify-between"
+                      >
+                        <span>
+                          {variant.name}: {variant.value}
+                        </span>
+                        {variant.extraCost > 0 && (
+                          <span className="text-gray-500">
+                            +Rs {variant.extraCost}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Editable Base & Final Price */}
+                <div className="grid grid-cols-2 gap-4 mt-3">
+                  <div>
+                    <Label>Base Price</Label>
+                    <Input
+                      type="number"
+                      value={item.basePrice}
+                      onChange={(e) =>
+                        handleBasePriceChange(index, e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Final Price</Label>
+                    <Input type="number" value={item.finalPrice} readOnly />
+                  </div>
+                </div>
               </Card>
             ))}
           </div>
 
-          {/* Order Status */}
+          {/* ORDER STATUS */}
           <div>
             <h2 className="font-semibold text-lg">Order Status</h2>
             <Select
@@ -219,7 +277,7 @@ export default function OrderEditor({ initialOrder }) {
             </Select>
           </div>
 
-          {/* Order Summary */}
+          {/* ORDER SUMMARY */}
           <div className="space-y-2">
             <h2 className="font-semibold text-lg">Order Summary</h2>
             <p>
@@ -228,7 +286,7 @@ export default function OrderEditor({ initialOrder }) {
             </p>
           </div>
 
-          {/* Save Button */}
+          {/* SAVE BUTTON */}
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? "Saving..." : "Save Changes"}
           </Button>
