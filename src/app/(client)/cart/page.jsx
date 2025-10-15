@@ -3,7 +3,7 @@
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Trash2, Plus, Minus } from "lucide-react";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import Link from "next/link";
 export default function CartPage() {
   const { cart, removeFromCart, addToCart, decreaseQuantity } = useCart();
 
+  // ✅ Subtotal — uses item.newPrice (already includes variant extras)
   const subtotal = cart.reduce(
     (sum, item) => sum + item.newPrice * item.quantity,
     0
@@ -24,9 +25,9 @@ export default function CartPage() {
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="text-gray-500 text-lg">🛒 Your cart is empty</p>
           <Link href="/shop">
-          <Button className="mt-6 bg-blue-600 hover:bg-blue-700 text-white">
-            Continue Shopping
-          </Button>
+            <Button className="mt-6 bg-blue-600 hover:bg-blue-700 text-white">
+              Continue Shopping
+            </Button>
           </Link>
         </div>
       ) : (
@@ -56,8 +57,30 @@ export default function CartPage() {
                     <p className="text-gray-500 text-sm">
                       {item.brand || "Unbranded"}
                     </p>
-                    <p className="text-blue-600 font-bold mt-1">
-                      Rs{item.newPrice}
+
+                    {/* ✅ Show selected variants */}
+                    {item.selectedVariants?.length > 0 && (
+                      <ul className="text-sm text-gray-600 mt-1 space-y-0.5">
+                        {item.selectedVariants.map((variant, i) => (
+                          <li key={i}>
+                            <span className="font-medium">{variant.name}:</span>{" "}
+                            {variant.value}
+                            {variant.extraCost > 0 && (
+                              <span className="text-blue-600 ml-1">
+                                (+Rs{variant.extraCost})
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {/* ✅ Price Display */}
+                    <p className="text-blue-600 font-bold mt-2">
+                      Rs{item.newPrice}{" "}
+                      <span className="text-gray-500 text-sm">
+                        × {item.quantity} = Rs{item.newPrice * item.quantity}
+                      </span>
                     </p>
                   </div>
 
@@ -117,9 +140,9 @@ export default function CartPage() {
               <span>Rs{subtotal}</span>
             </div>
             <Link href="/checkout">
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-              Proceed to Checkout
-            </Button>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                Proceed to Checkout
+              </Button>
             </Link>
           </Card>
         </div>
