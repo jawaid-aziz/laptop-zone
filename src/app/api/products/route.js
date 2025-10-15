@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import path from "path";
-import { promises as fs } from "fs";
 import dbConnect from "@/lib/dbConnect";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
@@ -17,13 +15,13 @@ export async function GET() {
   }
 }
 
-
 export async function POST(req) {
   try {
     await dbConnect();
 
     const formData = await req.formData();
     // Basic fields
+    console.log(formData);
     const name = formData.get("name");
     const brand = formData.get("brand");
     const stock = formData.get("stock");
@@ -42,7 +40,6 @@ export async function POST(req) {
         console.warn("Invalid tags format");
       }
     }
-
 
     // Specifications (JSON string)
     const specificationsRaw = formData.get("specifications");
@@ -66,6 +63,26 @@ export async function POST(req) {
       }
     }
 
+// ✅ Variants Parsing (safe and guaranteed)
+let variants = [];
+const variantsRaw = formData.get("variants");
+
+if (variantsRaw) {
+  try {
+    const parsed = typeof variantsRaw === "string" ? JSON.parse(variantsRaw) : variantsRaw;
+    if (Array.isArray(parsed)) {
+      variants = parsed;
+    } else {
+      console.warn("❌ Variants not an array:", parsed);
+    }
+  } catch (err) {
+    console.error("❌ Failed to parse variants:", err.message);
+  }
+}
+
+console.log("✅ Parsed Variants (final):", JSON.stringify(variants, null, 2));
+
+
     // **Cloudinary image upload**
     const files = formData.getAll("images");
     const imageUrls = [];
@@ -86,9 +103,8 @@ export async function POST(req) {
       }
     }
 
-
     // Save product
-    const newProduct = new Product({
+    const productData = new Product({
       name,
       brand,
       stock,
@@ -100,10 +116,20 @@ export async function POST(req) {
       tags,
       specifications,
       keyFeatures,
+      variants,
     });
 
-    newProduct.markModified("keyFeatures");
-    await newProduct.save();
+console.log("🧠 Final product data before save:", JSON.stringify(productData, null, 2));
+
+const newProduct = new Product(productData);
+
+newProduct.markModified("keyFeatures");
+newProduct.markModified("variants");
+newProduct.markModified("variants.0.options");
+
+await newProduct.save();
+
+console.log("✅ Product saved:", newProduct);
 
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error) {

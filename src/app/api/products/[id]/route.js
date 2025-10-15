@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Product from "@/models/Product";
-import path from "path";
-import fs from "fs/promises";
 import cloudinary from "@/lib/cloudinary";
 
 // GET single product
@@ -75,6 +73,23 @@ export async function PUT(req, { params }) {
       }
     }
 
+    // ✅ Variants Parsing (safe and guaranteed)
+    let variants = [];
+    const variantsRaw = formData.get("variants");
+
+    if (variantsRaw) {
+      try {
+        const parsed = typeof variantsRaw === "string" ? JSON.parse(variantsRaw) : variantsRaw;
+        if (Array.isArray(parsed)) {
+          variants = parsed;
+        } else {
+          console.warn("❌ Variants not an array:", parsed);
+        }
+      } catch (err) {
+        console.error("❌ Failed to parse variants:", err.message);
+      }
+    }
+
     // **Cloudinary image upload**
     const files = formData.getAll("images");
     const imageUrls = [];
@@ -108,7 +123,15 @@ export async function PUT(req, { params }) {
       tags,
       specifications,
       keyFeatures,
+      variants,
     };
+
+    Object.keys(updateData).forEach(
+      (key) => updateData[key] === undefined || updateData[key] === "undefined"
+        ? delete updateData[key]
+        : null
+    );
+
 
     // Update product
     const updated = await Product.findByIdAndUpdate(id, updateData, {

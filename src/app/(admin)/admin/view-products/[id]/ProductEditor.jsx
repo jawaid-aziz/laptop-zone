@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 
 export default function ProductEditor({ initialProduct }) {
   const [product, setProduct] = useState(initialProduct);
@@ -81,6 +83,8 @@ export default function ProductEditor({ initialProduct }) {
         "keyFeatures",
         JSON.stringify(editedProduct.keyFeatures || {})
       );
+      
+      formData.append("variants", JSON.stringify(editedProduct.variants || []));
 
       // Append images if user selected new ones
       if (editedProduct.newImages && editedProduct.newImages.length > 0) {
@@ -137,7 +141,8 @@ export default function ProductEditor({ initialProduct }) {
     } catch (error) {
       toast({
         title: "❌ Error",
-        description: error.message || "Something went wrong while deleting the product.",
+        description:
+          error.message || "Something went wrong while deleting the product.",
         variant: "destructive",
       });
     } finally {
@@ -227,6 +232,162 @@ export default function ProductEditor({ initialProduct }) {
             className="text-xl font-bold text-green-600 border px-2 py-1 rounded"
           />
         </div>
+
+        <Separator />
+
+        {/* Variants */}
+{/* Variants */}
+{editedProduct.variants && (
+  <div>
+    <h3 className="font-semibold mb-3">Variants</h3>
+
+    {editedProduct.variants.map((variant, vIndex) => (
+      <Card key={vIndex} className="p-4 mb-4 border rounded-lg shadow-sm">
+        {/* Variant Header */}
+        <div className="flex items-center justify-between mb-3">
+          <input
+            type="text"
+            value={variant.name}
+            onChange={(e) => {
+              const newVariants = structuredClone(editedProduct.variants);
+              newVariants[vIndex].name = e.target.value;
+              setEditedProduct((prev) => ({
+                ...prev,
+                variants: newVariants,
+              }));
+            }}
+            placeholder="Variant name (e.g. RAM, Storage)"
+            className="border px-3 py-1 rounded w-full max-w-xs"
+          />
+
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-600">Required</label>
+            <Switch
+              checked={variant.isRequired}
+              onCheckedChange={(checked) => {
+                const newVariants = structuredClone(editedProduct.variants);
+                newVariants[vIndex].isRequired = checked;
+                setEditedProduct((prev) => ({
+                  ...prev,
+                  variants: newVariants,
+                }));
+              }}
+            />
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                const newVariants = structuredClone(editedProduct.variants);
+                newVariants.splice(vIndex, 1);
+                setEditedProduct((prev) => ({
+                  ...prev,
+                  variants: newVariants,
+                }));
+              }}
+            >
+              Remove
+            </Button>
+          </div>
+        </div>
+
+        {/* Variant Options */}
+        <div className="space-y-3">
+          {variant.options?.map((option, oIndex) => (
+            <div key={oIndex} className="flex items-center gap-3">
+              <Input
+                placeholder="Option label (e.g. 8GB, 256GB)"
+                value={option.label}
+                onChange={(e) => {
+                  const newVariants = structuredClone(editedProduct.variants);
+                  newVariants[vIndex].options[oIndex].label = e.target.value;
+                  setEditedProduct((prev) => ({
+                    ...prev,
+                    variants: newVariants,
+                  }));
+                }}
+                className="w-1/2"
+              />
+<Input
+  type="number"
+  placeholder="Price Difference"
+  value={
+    option.priceDifference === 0
+      ? "" // Show empty instead of 0
+      : option.priceDifference
+  }
+  onChange={(e) => {
+    const newVariants = structuredClone(editedProduct.variants);
+    const value = e.target.value;
+
+    newVariants[vIndex].options[oIndex].priceDifference =
+      value === "" ? 0 : Number(value);
+
+    setEditedProduct((prev) => ({
+      ...prev,
+      variants: newVariants,
+    }));
+  }}
+  className="w-1/3"
+/>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const newVariants = structuredClone(editedProduct.variants);
+                  newVariants[vIndex].options.splice(oIndex, 1);
+                  setEditedProduct((prev) => ({
+                    ...prev,
+                    variants: newVariants,
+                  }));
+                }}
+              >
+                Remove
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        {/* Add Option Button */}
+        <Button
+          onClick={() => {
+            const newVariants = structuredClone(editedProduct.variants);
+            newVariants[vIndex].options.push({
+              label: "",
+              priceDifference: 0,
+            });
+            setEditedProduct((prev) => ({
+              ...prev,
+              variants: newVariants,
+            }));
+          }}
+          className="mt-3"
+          variant="secondary"
+        >
+          + Add Option
+        </Button>
+      </Card>
+    ))}
+
+    {/* Add Variant Button */}
+    <Button
+      onClick={() => {
+        const newVariants = structuredClone(editedProduct.variants || []);
+        newVariants.push({ name: "", isRequired: false, options: [] });
+        setEditedProduct((prev) => ({
+          ...prev,
+          variants: newVariants,
+        }));
+      }}
+      variant="default"
+    >
+      + Add Variant
+    </Button>
+  </div>
+)}
+
+
+        <Separator />
 
         {/* Overview */}
         <textarea

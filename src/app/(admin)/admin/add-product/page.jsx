@@ -27,6 +27,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function AddProductPage() {
@@ -38,6 +39,9 @@ export default function AddProductPage() {
   const [images, setImages] = useState([]);
   const [tags, setTags] = useState([]);
   const [specs, setSpecs] = useState([{ key: "", value: "" }]);
+    const [variants, setVariants] = useState([
+    { name: "", isRequired: false, options: [{ label: "", priceDifference: 0 }] },
+  ]);
   const [form, setForm] = useState({
     name: "",
     brand: "",
@@ -181,6 +185,39 @@ export default function AddProductPage() {
     setImages(images.filter((_, i) => i !== index));
   }
 
+  // Variants
+  const handleVariantChange = (index, field, value) => {
+    const updated = [...variants];
+    updated[index][field] = value;
+    setVariants(updated);
+  };
+
+  const handleOptionChange = (vIndex, oIndex, field, value) => {
+    const updated = [...variants];
+    updated[vIndex].options[oIndex][field] = value;
+    setVariants(updated);
+  };
+
+  const addVariant = () => {
+    setVariants([...variants, { name: "", isRequired: false, options: [{ label: "", priceDifference: 0 }] }]);
+  };
+
+  const removeVariant = (index) => {
+    setVariants(variants.filter((_, i) => i !== index));
+  };
+
+  const addOption = (vIndex) => {
+    const updated = [...variants];
+    updated[vIndex].options.push({ label: "", priceDifference: 0 });
+    setVariants(updated);
+  };
+
+  const removeOption = (vIndex, oIndex) => {
+    const updated = [...variants];
+    updated[vIndex].options = updated[vIndex].options.filter((_, i) => i !== oIndex);
+    setVariants(updated);
+  };
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
@@ -201,6 +238,9 @@ export default function AddProductPage() {
 
       // ✅ serialize keyFeatures into JSON
       formData.append("keyFeatures", JSON.stringify(form.keyFeatures));
+
+      // ✅ serialize variants into JSON
+      formData.append("variants", JSON.stringify(variants));
 
       // Images
       images.forEach((img) => formData.append("images", img));
@@ -228,6 +268,7 @@ export default function AddProductPage() {
       });
       setTags([]);
       setSpecs([{ key: "", value: "" }]);
+      setVariants([{ name: "", isRequired: false, options: [{ label: "", priceDifference: 0 }] }]);
       setImages([]);
     } catch (err) {
       toast({
@@ -408,6 +449,87 @@ export default function AddProductPage() {
                 </div>
               </div>
             )}
+                        {/* Variants */}
+            <Accordion type="multiple">
+              <AccordionItem value="variants">
+                <AccordionTrigger>Variants</AccordionTrigger>
+                <AccordionContent>
+                  {variants.map((variant, vIndex) => (
+                    <div key={vIndex} className="border p-3 rounded-lg mb-4">
+                      <div className="flex justify-between items-center">
+                        <Input
+                          placeholder="Variant name (e.g. RAM, Storage)"
+                          value={variant.name}
+                          onChange={(e) =>
+                            handleVariantChange(vIndex, "name", e.target.value)
+                          }
+                        />
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => removeVariant(vIndex)}
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                      <div className="flex items-center mt-2 gap-2">
+                        <Checkbox
+                          checked={variant.isRequired}
+                          onCheckedChange={(checked) =>
+                            handleVariantChange(vIndex, "isRequired", checked)
+                          }
+                        />
+                        <Label>This option is required</Label>
+                      </div>
+
+                      <div className="mt-4">
+                        {variant.options.map((opt, oIndex) => (
+                          <div key={oIndex} className="flex gap-2 mb-2">
+                            <Input
+                              placeholder="Option label (e.g. 8GB)"
+                              value={opt.label}
+                              onChange={(e) =>
+                                handleOptionChange(vIndex, oIndex, "label", e.target.value)
+                              }
+                            />
+                            <Input
+                              type="number"
+                              placeholder="Price difference"
+                              value={opt.priceDifference}
+                              onChange={(e) =>
+                                handleOptionChange(
+                                  vIndex,
+                                  oIndex,
+                                  "priceDifference",
+                                  e.target.value
+                                )
+                              }
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              onClick={() => removeOption(vIndex, oIndex)}
+                            >
+                              ✕
+                            </Button>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          onClick={() => addOption(vIndex)}
+                          variant="secondary"
+                        >
+                          + Add Option
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  <Button type="button" onClick={addVariant}>
+                    + Add Variant
+                  </Button>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
       </form>

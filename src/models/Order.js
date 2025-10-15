@@ -25,6 +25,18 @@ const OrderSchema = new mongoose.Schema(
       {
         product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
         quantity: { type: Number, required: true, min: 1 },
+
+        // ✅ Store the selected variant options
+        selectedVariants: [
+          {
+            name: String, // e.g. "RAM"
+            value: String, // e.g. "16GB"
+            extraCost: { type: Number, default: 0 },
+            wasRequired: { type: Boolean, default: false }, // ✅ for reference, matches ProductSchema.isRequired
+          },
+        ],
+        basePrice: { type: Number, required: true }, // price at time of order
+        finalPrice: { type: Number, required: true }, // base + variant extras
       },
     ],
 

@@ -23,6 +23,19 @@ const ProductSchema = new mongoose.Schema(
     keyFeatures: { type: mongoose.Schema.Types.Mixed, default: {} },
 
     idealUser: String,
+
+    variants: [
+      {
+        name: { type: String, required: true }, // e.g. "RAM", "Storage"
+        isRequired: { type: Boolean, default: false }, // ✅ NEW: Must choose one?
+        options: [
+          {
+            label: { type: String, required: true }, // e.g. "8GB"
+            priceDifference: { type: Number, default: 0 },
+          },
+        ],
+      },
+    ],
   },
   { timestamps: true }
 );
