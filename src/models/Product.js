@@ -26,11 +26,11 @@ const ProductSchema = new mongoose.Schema(
 
     variants: [
       {
-        name: { type: String, required: true }, // e.g. "RAM", "Storage"
+        name: { type: String}, // e.g. "RAM", "Storage"
         isRequired: { type: Boolean, default: false }, // ✅ NEW: Must choose one?
         options: [
           {
-            label: { type: String, required: true }, // e.g. "8GB"
+            label: { type: String }, // e.g. "8GB"
             priceDifference: { type: Number, default: 0 },
           },
         ],

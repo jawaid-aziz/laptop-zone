@@ -104,7 +104,7 @@ export default function ProductDetails({ product }) {
           </div>
 
           {/* ✅ Variants Section */}
-          {product.variants?.length > 0 && (
+          {(product.variants?.length > 0 && product.variants[0].name !== "") && (
             <div className="mb-4 space-y-4">
               {product.variants.map((variant, vIndex) => (
                 <div key={vIndex}>
