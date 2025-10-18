@@ -11,7 +11,20 @@ export default function Home() {
       <Features />
       <CategoryCards />
       <Portfolio />
-      <ProductCarousel />
+      <ProductCarousel title="HP" queryType="brand" queryValue="HP" />
+      <ProductCarousel title="Dell" queryType="brand" queryValue="Dell" />
+      <ProductCarousel title="Lenovo" queryType="brand" queryValue="Lenovo" />
+      <ProductCarousel
+        title="Laptop Accessories"
+        queryType="category"
+        queryValue="68cfc18523d21a3c625463de
+"
+      />
+      <ProductCarousel
+        title="Laptop Bags"
+        queryType="category"
+        queryValue="68cfc18e23d21a3c625463e0"
+      />
     </>
   );
 }

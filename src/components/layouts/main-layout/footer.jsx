@@ -42,9 +42,9 @@ export function Footer() {
         <div>
           <h3 className="font-semibold mb-5 text-sm tracking-wide uppercase text-white">Shop</h3>
           <ul className="space-y-3 text-sm">
-            <li><Link href="#" className="hover:text-white">Branded Laptops</Link></li>
-            <li><Link href="#" className="hover:text-white">Laptop Accessories</Link></li>
-            <li><Link href="#" className="hover:text-white">Laptop Bags</Link></li>
+            <li><Link href="#shop" className="hover:text-white">Branded Laptops</Link></li>
+            <li><Link href="#shop" className="hover:text-white">Laptop Accessories</Link></li>
+            <li><Link href="#shop" className="hover:text-white">Laptop Bags</Link></li>
           </ul>
         </div>
 

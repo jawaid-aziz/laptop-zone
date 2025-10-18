@@ -5,6 +5,9 @@ import Toaster from "@/components/ui/toaster";
 export const metadata = {
   title: "Laptop Zone",
   description: "Branded laptops – quality and savings in one place",
+  icons: {
+    icon: "/logo.png",
+  }
 };
 
 export default function RootLayout({ children }) {
