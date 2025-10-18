@@ -4,16 +4,59 @@ import Product from "@/models/Product";
 import Category from "@/models/Category";
 import cloudinary from "@/lib/cloudinary";
 
-export async function GET() {
+export async function GET(req) {
   try {
     await dbConnect();
-    const products = await Product.find({}).populate("category");
+
+    const { searchParams } = new URL(req.url);
+    const category = searchParams.get("category");
+    const minPrice = parseInt(searchParams.get("minPrice")) || 0;
+    const maxPrice = parseInt(searchParams.get("maxPrice")) || 9999999;
+    const brand = searchParams.get("brand");
+    const sort = searchParams.get("sort");
+    const search = searchParams.get("search");
+
+    // base query
+    const query = {
+      newPrice: { $gte: minPrice, $lte: maxPrice },
+    };
+
+    // add search condition BEFORE creating productsQuery
+    if (search && search.trim() !== "") {
+      query.name = { $regex: search, $options: "i" }; // case-insensitive
+    }
+
+    if (category && category !== "all") {
+      try {
+        const categoryDoc = await Category.findById(category);
+        if (categoryDoc) {
+          query.category = categoryDoc._id;
+        } else {
+          console.warn(`No category found for id: ${category}`);
+        }
+      } catch {
+        // if category is not an ObjectId, skip
+      }
+    }
+
+    if (brand && brand !== "all") query.brand = brand;
+
+    // now apply query
+    let productsQuery = Product.find(query).populate("category");
+
+    // sorting
+    if (sort === "priceLowHigh") productsQuery = productsQuery.sort({ newPrice: 1 });
+    if (sort === "priceHighLow") productsQuery = productsQuery.sort({ newPrice: -1 });
+
+    const products = await productsQuery.exec();
+
     return NextResponse.json(products, { status: 200 });
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
   }
 }
+
 
 export async function POST(req) {
   try {
@@ -63,24 +106,24 @@ export async function POST(req) {
       }
     }
 
-// ✅ Variants Parsing (safe and guaranteed)
-let variants = [];
-const variantsRaw = formData.get("variants");
+    // ✅ Variants Parsing (safe and guaranteed)
+    let variants = [];
+    const variantsRaw = formData.get("variants");
 
-if (variantsRaw) {
-  try {
-    const parsed = typeof variantsRaw === "string" ? JSON.parse(variantsRaw) : variantsRaw;
-    if (Array.isArray(parsed)) {
-      variants = parsed;
-    } else {
-      console.warn("❌ Variants not an array:", parsed);
+    if (variantsRaw) {
+      try {
+        const parsed = typeof variantsRaw === "string" ? JSON.parse(variantsRaw) : variantsRaw;
+        if (Array.isArray(parsed)) {
+          variants = parsed;
+        } else {
+          console.warn("❌ Variants not an array:", parsed);
+        }
+      } catch (err) {
+        console.error("❌ Failed to parse variants:", err.message);
+      }
     }
-  } catch (err) {
-    console.error("❌ Failed to parse variants:", err.message);
-  }
-}
 
-console.log("✅ Parsed Variants (final):", JSON.stringify(variants, null, 2));
+    console.log("✅ Parsed Variants (final):", JSON.stringify(variants, null, 2));
 
 
     // **Cloudinary image upload**
@@ -119,17 +162,17 @@ console.log("✅ Parsed Variants (final):", JSON.stringify(variants, null, 2));
       variants,
     });
 
-console.log("🧠 Final product data before save:", JSON.stringify(productData, null, 2));
+    console.log("🧠 Final product data before save:", JSON.stringify(productData, null, 2));
 
-const newProduct = new Product(productData);
+    const newProduct = new Product(productData);
 
-newProduct.markModified("keyFeatures");
-newProduct.markModified("variants");
-newProduct.markModified("variants.0.options");
+    newProduct.markModified("keyFeatures");
+    newProduct.markModified("variants");
+    newProduct.markModified("variants.0.options");
 
-await newProduct.save();
+    await newProduct.save();
 
-console.log("✅ Product saved:", newProduct);
+    console.log("✅ Product saved:", newProduct);
 
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error) {
