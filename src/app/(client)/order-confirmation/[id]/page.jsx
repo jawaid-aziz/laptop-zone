@@ -19,6 +19,7 @@ export default function OrderConfirmationPage({params}) {
           throw new Error("Failed to fetch order");
         }
         const data = await res.json();
+        console.log(data)
         setOrder(data);
       } catch (err) {
         setError(err.message);
@@ -112,7 +113,7 @@ export default function OrderConfirmationPage({params}) {
                   </p>
                 </div>
               </div>
-              <p className="font-semibold">Rs. {item.product.newPrice}</p>
+              <p className="font-semibold">Rs. {order.totalPrice}</p>
             </div>
           ))}
         </CardContent>

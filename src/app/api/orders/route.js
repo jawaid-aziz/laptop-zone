@@ -20,64 +20,39 @@ export async function GET() {
   }
 }
 
-// ✅ ADD new order
 export async function POST(req) {
   try {
     await dbConnect();
     const body = await req.json();
 
-        // Calculate total price from product prices × quantities
-    let totalPrice = 0;
+    // Destructure incoming order data
+    const { firstName, lastName, email, address, city, country, postalCode, phone, products, totalPrice, status } = body;
 
-    if (!body.products || !Array.isArray(body.products)) {
-      return NextResponse.json(
-        { error: "Products are required and must be an array" },
-        { status: 400 }
-      );
+    if (!products || products.length === 0) {
+      return NextResponse.json({ error: "No products in order" }, { status: 400 });
     }
 
-    for (const item of body.products) {
-      const product = await Product.findById(item.product);
+    // ✅ Ensure all product fields are preserved and validated
+    const orderProducts = products.map((item) => ({
+      product: item.product,
+      quantity: item.quantity || 1,
+      basePrice: Number(item.basePrice) || 0,
+      finalPrice: Number(item.finalPrice) || 0,
+      selectedVariants: item.selectedVariants || [],
+    }));
 
-      if (!product) {
-        return NextResponse.json(
-          { error: `Product not found: ${item.product}` },
-          { status: 404 }
-        );
-      }
-
-      const unitPrice = product.newPrice || item.newPrice || 0;
-      const quantity = item.quantity || 1;
-
-      // ✅ Check stock
-      if (product.stock < quantity) {
-        return NextResponse.json(
-          { error: `Not enough stock for product: ${product.name}` },
-          { status: 400 }
-        );
-      }
-
-      // ✅ Deduct stock
-      product.stock -= quantity;
-      await product.save();
-
-      // ✅ Add to total price
-      totalPrice += unitPrice * quantity;
-    }
-
-    // explicitly construct order to prevent unwanted fields injection
     const newOrder = new Order({
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      address: body.address,
-      city: body.city,
-      country: body.country,
-      postalCode: body.postalCode,
-      phone: body.phone,
-      products: body.products, // [{ product: productId, quantity }]
-      totalPrice: body.totalPrice,
-      status: body.status || "pending",
+      firstName,
+      lastName,
+      email,
+      address,
+      city,
+      country,
+      postalCode,
+      phone,
+      products: orderProducts,
+      totalPrice,
+      status: status || "pending",
     });
 
     await newOrder.save();
