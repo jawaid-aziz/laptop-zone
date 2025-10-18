@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import {
   Card,
@@ -66,9 +66,10 @@ export default function ProductCarousel({ title, queryType, queryValue }) {
     {/* Embla track */}
     <div className="flex touch-pan-y touch-pinch-zoom">
       {products.map((product) => (
+        <Link key={product._id} href={`/shop/${product._id}`}>
         <div
           key={product._id}
-          className="flex-[0_0_80%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] xl:flex-[0_0_20%] px-3"
+          className="flex-[0_0_80%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] xl:flex-[0_0_20%] px-3 cursor-pointer"
         >
           <Card className="border hover:shadow-lg transition-shadow rounded-xl overflow-hidden">
             <div className="relative w-full h-56 bg-white flex items-center justify-center p-4">
@@ -88,7 +89,9 @@ export default function ProductCarousel({ title, queryType, queryValue }) {
             </CardHeader>
           </Card>
         </div>
+        </Link>
       ))}
+      
     </div>
   </div>
 

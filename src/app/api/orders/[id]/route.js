@@ -42,7 +42,7 @@ export async function POST(req) {
       quantity: item.quantity || 1,
       basePrice: Number(item.basePrice) || 0,
       finalPrice: Number(item.finalPrice) || 0,
-      selectedVariants: item.selectedVariants || [], // ✅ preserve variant list
+      selectedVariants: item.selectedVariants || [],
     }));
 
     const newOrder = new Order({

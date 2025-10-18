@@ -17,8 +17,7 @@ export default function Home() {
       <ProductCarousel
         title="Laptop Accessories"
         queryType="category"
-        queryValue="68cfc18523d21a3c625463de
-"
+        queryValue="68cfc18523d21a3c625463de"
       />
       <ProductCarousel
         title="Laptop Bags"
