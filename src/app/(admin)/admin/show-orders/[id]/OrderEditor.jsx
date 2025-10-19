@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 
 export default function OrderEditor({ initialOrder }) {
   const [order, setOrder] = useState(initialOrder);
@@ -69,7 +70,6 @@ export default function OrderEditor({ initialOrder }) {
       });
 
       if (!res.ok) throw new Error("Failed to update order");
-
       toast({
         title: "✅ Order Updated",
         description: "The order has been saved successfully.",
@@ -84,6 +84,14 @@ export default function OrderEditor({ initialOrder }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
   }
 
   return (

@@ -29,10 +29,11 @@ import {
 } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 
 export default function AddProductPage() {
   const { toast } = useToast();
-
+  const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [open, setOpen] = useState(false);
   const [newCategory, setNewCategory] = useState("");
@@ -120,6 +121,7 @@ export default function AddProductPage() {
 
   const handleAddCategory = async () => {
     if (!newCategory.trim()) return;
+    setLoading(true);
     const res = await fetch("/api/categories", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -127,6 +129,7 @@ export default function AddProductPage() {
     });
 
     if (res.ok) {
+      setLoading(false);
       const created = await res.json();
       setCategories((prev) => [...prev, created]);
       setForm({ ...form, category: created._id });
@@ -221,6 +224,7 @@ export default function AddProductPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
+      setLoading(true);
       const formData = new FormData();
 
       // Basic fields
@@ -251,7 +255,7 @@ export default function AddProductPage() {
       });
 
       if (!res.ok) throw new Error("Failed to save");
-
+      setLoading(false);
       toast({
         title: "✅ Product added successfully!",
         description: "Your product has been saved to the database.",
@@ -271,12 +275,21 @@ export default function AddProductPage() {
       setVariants([{ name: "", isRequired: false, options: [{ label: "", priceDifference: 0 }] }]);
       setImages([]);
     } catch (err) {
+      setLoading(false);
       toast({
         variant: "destructive",
         title: "❌ Failed to save product",
         description: err.message,
       });
     }
+  }
+
+    if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
   }
 
   return (

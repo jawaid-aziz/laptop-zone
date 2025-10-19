@@ -22,7 +22,7 @@ export default function ContactPage() {
           <p>We’re available from 10 am – 10 pm, 6 days a week.</p>
           <div>
             <p className="font-semibold">Customer Service:</p>
-            <p>+92 322 2155628</p>
+            <p>+92 300 1117320</p>
           </div>
         </div>
 
@@ -37,11 +37,11 @@ export default function ContactPage() {
           <p>Fill out our form and we will contact you within 24 hours.</p>
           <div>
             <p className="font-semibold">Customer Service:</p>
-            <p>support@laptopzone.pk</p>
+            <p>laptopzone2003@gmail.com</p>
           </div>
           <div>
             <p className="font-semibold">Corporate:</p>
-            <p>corporate@laptopzone.pk</p>
+            <p>laptopzone2003@gmail.com</p>
           </div>
         </div>
 

@@ -7,6 +7,7 @@ import { useCart } from "@/context/CartContext";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { Check, Loader2 } from "lucide-react"; // ✅ Add icons
 
 export default function ProductDetails({ product }) {
   const { addToCart } = useCart();
@@ -14,7 +15,8 @@ export default function ProductDetails({ product }) {
   // State
   const [selectedVariants, setSelectedVariants] = useState({});
   const [displayPrice, setDisplayPrice] = useState(Number(product.newPrice));
-
+  const [isAdding, setIsAdding] = useState(false); // ✅ show spinner while adding
+  const [added, setAdded] = useState(false); // ✅ show confirmation
   // ✅ Handle variant selection
   const handleVariantChange = (variantName, selectedOption) => {
     const updatedVariants = {
@@ -34,9 +36,10 @@ export default function ProductDetails({ product }) {
   };
 
   // ✅ Prepare item for cart (matches Order model)
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     console.log("Selected Variants:", selectedVariants);
-
+    setIsAdding(true);
+    setAdded(false);
     // Map to match Order model's `selectedVariants`
     const variantList = Object.entries(selectedVariants).map(
       ([name, option]) => ({
@@ -55,7 +58,15 @@ export default function ProductDetails({ product }) {
       newPrice: displayPrice, // for backward compatibility with your CartContext
     };
     console.log(itemToAdd);
+
+    // Simulate short delay for spinner (optional)
+    await new Promise((r) => setTimeout(r, 800));
     addToCart(itemToAdd);
+    setIsAdding(false);
+    setAdded(true);
+    
+    // Reset confirmation after 2 seconds
+    setTimeout(() => setAdded(false), 2000);
   };
 
   return (
@@ -104,13 +115,11 @@ export default function ProductDetails({ product }) {
           </div>
 
           {/* ✅ Variants Section */}
-          {(product.variants?.length > 0 && product.variants[0].name !== "") && (
+          {product.variants?.length > 0 && product.variants[0].name !== "" && (
             <div className="mb-4 space-y-4">
               {product.variants.map((variant, vIndex) => (
                 <div key={vIndex}>
-                  <h3 className="text-md font-semibold mb-2">
-                    {variant.name}
-                  </h3>
+                  <h3 className="text-md font-semibold mb-2">{variant.name}</h3>
 
                   <RadioGroup
                     onValueChange={(value) => {
@@ -160,14 +169,33 @@ export default function ProductDetails({ product }) {
             </div>
           )}
 
-          {/* Add to Cart */}
+
+          {/* ✅ Add to Cart Button with Feedback */}
           <div className="mb-4">
             <Button
-              className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition"
-              disabled={product.stock === 0}
+              className={`w-full md:w-auto font-semibold rounded-lg shadow-md transition flex items-center justify-center gap-2 ${
+                added
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
+              disabled={isAdding || product.stock === 0}
               onClick={handleAddToCart}
             >
-              {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+              {isAdding ? (
+                <>
+                  <Loader2 className="animate-spin w-4 h-4" />
+                  Adding...
+                </>
+              ) : added ? (
+                <>
+                  <Check className="w-4 h-4" />
+                  Added!
+                </>
+              ) : product.stock === 0 ? (
+                "Out of Stock"
+              ) : (
+                "Add to Cart"
+              )}
             </Button>
           </div>
 

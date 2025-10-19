@@ -15,14 +15,16 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     async function fetchOrders() {
+      setLoading(true);
       try {
         const res = await fetch("/api/orders");
         const data = await res.json();
@@ -40,8 +42,12 @@ export default function OrdersPage() {
     fetchOrders();
   }, []);
 
-  if (loading) {
-    return <p className="p-6 text-center">Loading orders...</p>;
+    if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
   }
 
   if (!orders.length) {

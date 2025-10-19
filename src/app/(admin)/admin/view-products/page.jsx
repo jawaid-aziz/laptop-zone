@@ -7,27 +7,39 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 
 export default function AllProducts() {
   const [products, setProducts] = useState([]);
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true);
         const res = await fetch("/api/products");
         const data = await res.json();
         setProducts(data);
       } catch (error) {
+        setLoading(false);
         toast({
           variant: "destructive",
           title: "❌ Failed to fetch products",
-          description: err.message,
+          description: error.message,
         });
       }
     };
     fetchProducts();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 p-6 bg-[#f5f7fa]">

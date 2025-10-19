@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-
+import { Loader2 } from "lucide-react";
 export default function ProductEditor({ initialProduct }) {
   const [product, setProduct] = useState(initialProduct);
   const [editedProduct, setEditedProduct] = useState(initialProduct);
@@ -154,6 +154,13 @@ export default function ProductEditor({ initialProduct }) {
     return <p className="text-red-500">This product has been deleted.</p>;
   }
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
+  }
   return (
     <Card className="shadow-lg">
       <CardHeader>
