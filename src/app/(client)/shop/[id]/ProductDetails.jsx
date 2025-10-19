@@ -90,7 +90,7 @@ export default function ProductDetails({ product }) {
             alt={product.name}
             width={600}
             height={400}
-            className="rounded-lg object-contain w-full h-auto"
+            className="rounded-lg object-contain w-full h-auto transition-transform duration-500 hover:scale-105"
           />
         </div>
 
@@ -207,16 +207,11 @@ export default function ProductDetails({ product }) {
               <li className="text-gray-500">No tags available</li>
             )}
           </ul>
-
-          <p className="text-sm text-gray-700 mb-2">
-            <strong>Category:</strong>{" "}
-            {product.category?.name || "Uncategorized"}
-          </p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="mt-12">
+      <div className="mt-12 justify-center px-35">
         <Tabs defaultValue="description" className="w-full">
           <TabsList>
             <TabsTrigger value="description">Description</TabsTrigger>
@@ -226,16 +221,23 @@ export default function ProductDetails({ product }) {
           <TabsContent value="description" className="pt-6">
             {/* Specifications */}
             {product.specifications?.length > 0 && (
-              <table className="w-full border text-sm text-left mb-8">
-                <tbody>
-                  {product.specifications.map((spec, i) => (
-                    <tr key={i} className="border">
-                      <td className="p-2 font-medium">{spec.key}</td>
-                      <td className="p-2">{spec.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="overflow-x-auto mb-8">
+                <table className="w-full text-sm border-collapse">
+                  <tbody>
+                    {product.specifications.map((spec, i) => (
+                      <tr
+                        key={i}
+                        className="border-b hover:bg-gray-50 transition"
+                      >
+                        <td className="p-3 font-medium w-1/3 text-gray-800">
+                          {spec.key}
+                        </td>
+                        <td className="p-3 text-gray-600">{spec.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
 
             {/* Overview */}
@@ -250,12 +252,12 @@ export default function ProductDetails({ product }) {
             {product.keyFeatures &&
               Object.values(product.keyFeatures).some((val) => val) && (
                 <div className="mb-6">
-                  <h3 className="text-xl font-semibold mb-2">Key Features</h3>
-                  <ul className="list-disc list-inside space-y-1 text-gray-700">
+                  <h3 className="text-xl font-semibold mb-3 border-b pb-1">Key Features</h3>
+                  <ul className="list-disc list-inside space-y-2 text-gray-700 text-justify leading-relaxed">
                     {Object.entries(product.keyFeatures).map(
                       ([key, value]) =>
                         value && (
-                          <li key={key}>
+                          <li key={key} className="break-words">
                             <span className="font-medium capitalize">
                               {key.replace(/([A-Z])/g, " $1")}:
                             </span>{" "}
