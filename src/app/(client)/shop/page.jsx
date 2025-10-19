@@ -43,7 +43,6 @@ export default function Shop() {
   async function fetchProducts() {
     try {
       setLoading(true);
-
       const query = new URLSearchParams({
         category: filters.category,
         brand: filters.brand,
@@ -81,25 +80,20 @@ export default function Shop() {
     fetchProducts();
   }, []);
 
-const handleSortChange = (value) => {
-  setFilters((f) => ({ ...f, sort: value }));
+  const handleSortChange = (value) => {
+    setFilters((f) => ({ ...f, sort: value }));
 
-  if (value === "default") {
-    // 🔁 reset to the original fetched order
-    setDisplayedProducts(products);
-    return;
-  }
+    if (value === "default") {
+      setDisplayedProducts(products);
+      return;
+    }
 
-  let sorted = [...products];
-  if (value === "priceLowHigh") {
-    sorted.sort((a, b) => a.newPrice - b.newPrice);
-  } else if (value === "priceHighLow") {
-    sorted.sort((a, b) => b.newPrice - a.newPrice);
-  }
+    let sorted = [...products];
+    if (value === "priceLowHigh") sorted.sort((a, b) => a.newPrice - b.newPrice);
+    else if (value === "priceHighLow") sorted.sort((a, b) => b.newPrice - a.newPrice);
 
-  setDisplayedProducts(sorted);
-};
-
+    setDisplayedProducts(sorted);
+  };
 
   const handleReset = () => {
     setFilters({
@@ -110,6 +104,15 @@ const handleSortChange = (value) => {
       sort: "default",
     });
   };
+
+  // 🔹 Skeleton Loader Component
+  const ProductSkeleton = () => (
+    <div className="animate-pulse">
+      <div className="w-full h-48 bg-gray-200 rounded-t-lg mb-2"></div>
+      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+    </div>
+  );
 
   return (
     <div className="bg-white min-h-screen">
@@ -131,21 +134,14 @@ const handleSortChange = (value) => {
                 {[
                   { label: "All", value: "all" },
                   { label: "Laptops", value: "68cfc17823d21a3c625463dc" },
-                  {
-                    label: "Laptop Accessories",
-                    value: "68cfc18523d21a3c625463de",
-                  },
+                  { label: "Laptop Accessories", value: "68cfc18523d21a3c625463de" },
                   { label: "Laptop Bags", value: "68cfc18e23d21a3c625463e0" },
                 ].map((cat) => (
                   <Button
                     key={cat.value}
-                    variant={
-                      filters.category === cat.value ? "default" : "outline"
-                    }
+                    variant={filters.category === cat.value ? "default" : "outline"}
                     className="w-full mb-2"
-                    onClick={() =>
-                      setFilters((f) => ({ ...f, category: cat.value }))
-                    }
+                    onClick={() => setFilters((f) => ({ ...f, category: cat.value }))}
                   >
                     {cat.label}
                   </Button>
@@ -173,9 +169,7 @@ const handleSortChange = (value) => {
               <AccordionTrigger>Price Range (Rs)</AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2 text-sm">
-                  <p>
-                    {filters.minPrice} - {filters.maxPrice}
-                  </p>
+                  <p>{filters.minPrice} - {filters.maxPrice}</p>
                   <input
                     type="range"
                     min="20000"
@@ -196,12 +190,7 @@ const handleSortChange = (value) => {
           </Accordion>
 
           <div className="flex gap-2 flex-col">
-            <Button
-              variant="default"
-              onClick={fetchProducts}
-              className="w-full"
-              disabled={loading}
-            >
+            <Button variant="default" onClick={fetchProducts} className="w-full" disabled={loading}>
               {loading ? "Loading..." : "Apply Filter"}
             </Button>
             <Button variant="outline" className="w-full" onClick={handleReset}>
@@ -214,9 +203,7 @@ const handleSortChange = (value) => {
         <div className="md:col-span-3">
           <div className="flex justify-between items-center mb-6">
             <p className="text-sm text-gray-600">
-              {loading
-                ? "Loading products..."
-                : `Showing ${products.length} products`}
+              {loading ? "Loading products..." : `Showing ${products.length} products`}
             </p>
             <Select value={filters.sort} onValueChange={handleSortChange}>
               <SelectTrigger className="w-[180px]">
@@ -230,50 +217,56 @@ const handleSortChange = (value) => {
             </Select>
           </div>
 
-          {products.length === 0 && !loading && (
-            <p className="text-center text-gray-500 py-10">
-              No products found.
-            </p>
-          )}
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {displayedProducts.map((product) => (
-              <Link key={product._id} href={`/shop/${product._id}`}>
-                <Card className="relative group cursor-pointer hover:shadow-lg transition border border-gray-200">
-                  <div className="relative w-full h-48 bg-gray-50 flex items-center justify-center rounded-t-lg overflow-hidden">
-                    {product.stock === 0 && (
-                      <Badge className="absolute top-2 left-2 bg-gray-800 text-white">
-                        SOLD OUT
-                      </Badge>
-                    )}
-                    <Image
-                      src={product.images?.[0] || "/placeholder.png"}
-                      alt={product.name}
-                      width={200}
-                      height={200}
-                      className="object-contain transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-
-                  <CardHeader className="p-4">
-                    <CardTitle className="text-sm font-medium line-clamp-2">
-                      {product.name}
-                    </CardTitle>
-                    <CardDescription className="mt-1">
-                      {product.oldPrice && (
-                        <span className="line-through mr-2 text-gray-400">
-                          Rs{product.oldPrice}
-                        </span>
+          {/* Skeleton Loader */}
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i}>
+                  <ProductSkeleton />
+                </div>
+              ))}
+            </div>
+          ) : products.length === 0 ? (
+            <p className="text-center text-gray-500 py-10">No products found.</p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {displayedProducts.map((product) => (
+                <Link key={product._id} href={`/shop/${product._id}`}>
+                  <Card className="relative group cursor-pointer hover:shadow-lg transition border border-gray-200">
+                    <div className="relative w-full h-48 bg-gray-50 flex items-center justify-center rounded-t-lg overflow-hidden">
+                      {product.stock === 0 && (
+                        <Badge className="absolute top-2 left-2 bg-gray-800 text-white">
+                          SOLD OUT
+                        </Badge>
                       )}
-                      <span className="font-semibold text-blue-700">
-                        Rs{product.newPrice}
-                      </span>
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                      <Image
+                        src={product.images?.[0] || "/placeholder.png"}
+                        alt={product.name}
+                        width={200}
+                        height={200}
+                        className="object-contain transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <CardHeader className="p-4">
+                      <CardTitle className="text-sm font-medium line-clamp-2">
+                        {product.name}
+                      </CardTitle>
+                      <CardDescription className="mt-1">
+                        {product.oldPrice && (
+                          <span className="line-through mr-2 text-gray-400">
+                            Rs{product.oldPrice}
+                          </span>
+                        )}
+                        <span className="font-semibold text-blue-700">
+                          Rs{product.newPrice}
+                        </span>
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

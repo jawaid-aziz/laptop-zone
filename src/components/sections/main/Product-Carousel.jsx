@@ -24,7 +24,6 @@ export default function ProductCarousel({ title, queryType, queryValue }) {
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
-  // ✅ Fetch products dynamically
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -44,6 +43,19 @@ export default function ProductCarousel({ title, queryType, queryValue }) {
     fetchProducts();
   }, [queryType, queryValue]);
 
+  // ✅ Skeleton placeholder cards
+  const SkeletonCard = () => (
+    <div className="flex-[0_0_80%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] xl:flex-[0_0_20%] px-3">
+      <Card className="border rounded-xl overflow-hidden animate-pulse">
+        <div className="relative w-full h-56 bg-gray-200" />
+        <CardHeader className="pt-4 space-y-2">
+          <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+        </CardHeader>
+      </Card>
+    </div>
+  );
+
   return (
     <section className="bg-white py-12">
       <div className="max-w-7xl mx-auto px-6">
@@ -56,50 +68,55 @@ export default function ProductCarousel({ title, queryType, queryValue }) {
         </div>
 
         {/* Carousel */}
-<div className="flex items-center gap-3">
-  <Button size="icon" variant="outline" onClick={scrollPrev}>
-    <ChevronLeft />
-  </Button>
+        <div className="flex items-center gap-3">
+          <Button size="icon" variant="outline" onClick={scrollPrev}>
+            <ChevronLeft />
+          </Button>
 
-  {/* Embla viewport */}
-  <div className="overflow-hidden w-full" ref={emblaRef}>
-    {/* Embla track */}
-    <div className="flex touch-pan-y touch-pinch-zoom">
-      {products.map((product) => (
-        <Link key={product._id} href={`/shop/${product._id}`}>
-        <div
-          key={product._id}
-          className="flex-[0_0_80%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] xl:flex-[0_0_20%] px-3 cursor-pointer"
-        >
-          <Card className="border hover:shadow-lg transition-shadow rounded-xl overflow-hidden">
-            <div className="relative w-full h-56 bg-white flex items-center justify-center p-4">
-              <Image
-                src={product.images[0] || "/placeholder.png"}
-                alt={product.name}
-                width={240}
-                height={180}
-                className="object-contain max-h-[200px] transition-transform duration-300 hover:scale-105"
-              />
+          {/* Embla viewport */}
+          <div className="overflow-hidden w-full" ref={emblaRef}>
+            <div className="flex touch-pan-y touch-pinch-zoom">
+              {loading
+                ? // ✅ Render 5 skeletons while loading
+                  Array.from({ length: 5 }).map((_, idx) => (
+                    <SkeletonCard key={idx} />
+                  ))
+                : // ✅ Render actual products
+                  products.map((product) => (
+                    <Link key={product._id} href={`/shop/${product._id}`}>
+                      <div
+                        key={product._id}
+                        className="flex-[0_0_80%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] xl:flex-[0_0_20%] px-3"
+                      >
+                        <Card className="border hover:shadow-lg transition-shadow rounded-xl overflow-hidden cursor-pointer">
+                          <div className="relative w-full h-56 bg-white flex items-center justify-center p-4">
+                            <Image
+                              src={product.images[0] || "/placeholder.png"}
+                              alt={product.name}
+                              width={240}
+                              height={180}
+                              className="object-contain max-h-[200px] transition-transform duration-300 hover:scale-105"
+                            />
+                          </div>
+                          <CardHeader className="pt-4">
+                            <CardTitle className="text-base line-clamp-1">
+                              {product.name}
+                            </CardTitle>
+                            <CardDescription>
+                              PKR {product.newPrice}
+                            </CardDescription>
+                          </CardHeader>
+                        </Card>
+                      </div>
+                    </Link>
+                  ))}
             </div>
-            <CardHeader className="pt-4">
-              <CardTitle className="text-base line-clamp-1">
-                {product.name}
-              </CardTitle>
-              <CardDescription>PKR {product.newPrice}</CardDescription>
-            </CardHeader>
-          </Card>
+          </div>
+
+          <Button size="icon" variant="outline" onClick={scrollNext}>
+            <ChevronRight />
+          </Button>
         </div>
-        </Link>
-      ))}
-      
-    </div>
-  </div>
-
-  <Button size="icon" variant="outline" onClick={scrollNext}>
-    <ChevronRight />
-  </Button>
-</div>
-
       </div>
     </section>
   );
