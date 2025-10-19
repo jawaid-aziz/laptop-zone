@@ -21,6 +21,7 @@ export default function AllProducts() {
         const res = await fetch("/api/products");
         const data = await res.json();
         setProducts(data);
+        setLoading(false);
       } catch (error) {
         setLoading(false);
         toast({
