@@ -120,3 +120,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+.leaflet-container {
+  height: 500px;
+  width: 100%;
+}
