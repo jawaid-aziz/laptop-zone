@@ -103,7 +103,14 @@ export default function ProductCarousel({ title, queryType, queryValue }) {
                               {product.name}
                             </CardTitle>
                             <CardDescription>
-                              PKR {product.newPrice}
+                        {product.oldPrice && (
+                          <span className="line-through mr-2 text-gray-400">
+                            Rs{product.oldPrice}
+                          </span>
+                        )}
+                        <span className="font-semibold text-blue-700">
+                          Rs{product.newPrice}
+                        </span>
                             </CardDescription>
                           </CardHeader>
                         </Card>
@@ -113,7 +120,7 @@ export default function ProductCarousel({ title, queryType, queryValue }) {
             </div>
           </div>
 
-          <Button size="icon" variant="outline" onClick={scrollNext}>
+          <Button size="icon" variant="outline" onClick={scrollNext} className="cursor-pointer">
             <ChevronRight />
           </Button>
         </div>

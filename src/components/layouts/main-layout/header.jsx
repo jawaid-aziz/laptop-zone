@@ -195,7 +195,7 @@ export default function Header() {
 
           {/* Cart Icon */}
           <Link href="/cart">
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative cursor-pointer">
               <ShoppingCart className="w-5 h-5" />
               {/* Cart badge */}
               {cart.length > 0 && (

@@ -27,11 +27,11 @@ export default function Hero() {
             Find the Right Laptop <br />for Your Needs
           </h1>
           <p className="text-gray-800 max-w-lg">
-            Laptop Zone brings you the latest laptops, accessories, and gadgets — all at competitive prices, with flexible payment plans tailored for you.
+            Laptop Zone brings you the latest laptops, accessories, and bags — all at competitive prices, with flexible payment plans tailored for you.
           </p>
           <div className="flex gap-4">
             <Link href="/shop">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white cursor-pointer">
                 Shop Now
               </Button>
             </Link>

@@ -14,8 +14,8 @@ const categories = [
     link: "/shop",
   },
   {
-    title: "Laptops on Rent",
-    image: "/categories/rent.webp",
+    title: "Bags",
+    image: "/categories/bags.jpeg",
   },
 ];
 

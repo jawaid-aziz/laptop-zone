@@ -4,19 +4,19 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Shield, RotateCcw, Truck, Award } from "lucide-react";
+import { Shield, ShieldCheck, Truck, Award } from "lucide-react";
 
 const features = [
   {
     icon: Shield,
-    title: "1 Month",
+    title: "1 Week",
     description: "Checking Warranty",
   },
-  {
-    icon: RotateCcw,
-    title: "14 Days Return",
-    description: "T&C's Apply",
-  },
+{
+  icon: ShieldCheck,
+  title: "Secure Payments",
+  description: "SSL Encrypted Checkout",
+},
   {
     icon: Truck,
     title: "Free Shipping",

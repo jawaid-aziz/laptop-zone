@@ -51,7 +51,7 @@ export default function Portfolio() {
               <p className="mb-4 text-sm text-gray-800 max-w-xs">{banner.subtitle}</p>
               <Button
                 variant="secondary"
-                className="bg-white text-black hover:bg-gray-200"
+                className="bg-white text-black hover:bg-gray-200 cursor-pointer"
               >
                 {banner.buttonText}
               </Button>
