@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
+dotenv.config();
 let isConnected = false; // Track the connection state
 
 async function dbConnect() {
@@ -12,7 +14,7 @@ async function dbConnect() {
 
   try {
     // ✅ Use environment variable instead of hardcoding
-    const mongoURI = "mongodb+srv://mangoManMongo:secret-hai@cluster0.m9e0vmr.mongodb.net/laptop-zone?retryWrites=true&w=majority&appName=Cluster0";
+    const mongoURI = process.env.MONGO_URL;
 
     if (!mongoURI) {
       throw new Error("❌ MONGODB_URI is not defined in .env.local");
